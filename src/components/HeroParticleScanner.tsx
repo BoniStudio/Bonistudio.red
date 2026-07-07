@@ -1,7 +1,7 @@
 import { Canvas, useFrame } from '@react-three/fiber';
 import { ArrowDownRight, FlaskConical } from 'lucide-react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { useMemo, useRef } from 'react';
+import { Component, useMemo, useRef, type ErrorInfo, type ReactNode } from 'react';
 import * as THREE from 'three';
 
 const vertexShader = `
@@ -69,6 +69,61 @@ type ParticleCloud = {
   seeds: Float32Array;
   accents: Float32Array;
 };
+
+type ParticleErrorBoundaryProps = {
+  children: ReactNode;
+  fallback: ReactNode;
+};
+
+type ParticleErrorBoundaryState = {
+  hasError: boolean;
+};
+
+class ParticleErrorBoundary extends Component<
+  ParticleErrorBoundaryProps,
+  ParticleErrorBoundaryState
+> {
+  state: ParticleErrorBoundaryState = {
+    hasError: false,
+  };
+
+  static getDerivedStateFromError(): ParticleErrorBoundaryState {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: unknown, errorInfo: ErrorInfo) {
+    console.error('Hero particle scene failed; using static fallback.', error, errorInfo.componentStack);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return this.props.fallback;
+    }
+
+    return this.props.children;
+  }
+}
+
+function getWebGLAvailability() {
+  if (typeof window === 'undefined' || !window.WebGLRenderingContext) {
+    return false;
+  }
+
+  try {
+    const canvas = document.createElement('canvas');
+    const context =
+      canvas.getContext('webgl2') ||
+      canvas.getContext('webgl') ||
+      canvas.getContext('experimental-webgl');
+    return Boolean(context);
+  } catch {
+    return false;
+  }
+}
+
+function HeroCanvasFallback() {
+  return <div className="hero__canvas-fallback" aria-hidden="true" />;
+}
 
 function createRandom(seed = 7) {
   let state = seed;
@@ -296,22 +351,31 @@ type HeroParticleScannerProps = {
 
 export function HeroParticleScanner({ isCompact }: HeroParticleScannerProps) {
   const reducedMotion = Boolean(useReducedMotion());
+  const webGLAvailable = useMemo(getWebGLAvailability, []);
   const count = reducedMotion ? 1500 : isCompact ? 2600 : 5600;
+  const sceneClassName = webGLAvailable ? 'hero__scene' : 'hero__scene hero__scene--static';
 
   return (
     <section className="hero" aria-labelledby="hero-title">
-      <div className="hero__scene" aria-hidden="true">
-        <Canvas
-          camera={{ position: [0, 0, isCompact ? 5.2 : 4.2], fov: isCompact ? 52 : 46 }}
-          dpr={isCompact ? [1, 1.25] : [1, 1.7]}
-          gl={{ antialias: false, powerPreference: 'high-performance', alpha: true }}
-          frameloop={reducedMotion ? 'demand' : 'always'}
-        >
-          <color attach="background" args={['#050607']} />
-          <fog attach="fog" args={['#050607', 4.2, 7.5]} />
-          <ScannerPoints count={count} reducedMotion={reducedMotion} />
-          <HologramFrame reducedMotion={reducedMotion} />
-        </Canvas>
+      <div className={sceneClassName} aria-hidden="true">
+        {webGLAvailable ? (
+          <ParticleErrorBoundary fallback={<HeroCanvasFallback />}>
+            <Canvas
+              camera={{ position: [0, 0, isCompact ? 5.2 : 4.2], fov: isCompact ? 52 : 46 }}
+              dpr={isCompact ? [1, 1.25] : [1, 1.7]}
+              fallback={<HeroCanvasFallback />}
+              gl={{ antialias: false, powerPreference: 'high-performance', alpha: true }}
+              frameloop={reducedMotion ? 'demand' : 'always'}
+            >
+              <color attach="background" args={['#050607']} />
+              <fog attach="fog" args={['#050607', 4.2, 7.5]} />
+              <ScannerPoints count={count} reducedMotion={reducedMotion} />
+              <HologramFrame reducedMotion={reducedMotion} />
+            </Canvas>
+          </ParticleErrorBoundary>
+        ) : (
+          <HeroCanvasFallback />
+        )}
         <div className="hero__mesh" />
         <div className="hero__scanner-line" />
         <div className="hero__noise" />

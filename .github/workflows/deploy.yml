@@ -21,6 +21,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: main
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -31,13 +33,16 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
       - name: Build
         run: npm run build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: ./dist
 
   deploy:
     environment:

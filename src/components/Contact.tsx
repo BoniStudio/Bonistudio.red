@@ -3,12 +3,11 @@ import type { SiteContent } from '../i18n/content';
 
 type ContactProps = {
   content: SiteContent['contact'];
-  footer: SiteContent['footer'];
 };
 
-export function Contact({ content, footer }: ContactProps) {
+export function Contact({ content }: ContactProps) {
   return (
-    <footer className="contact-panel" id="contact">
+    <section className="contact-panel" id="contact">
       <div>
         <p>{content.eyebrow}</p>
         <h2>{content.title}</h2>
@@ -18,7 +17,7 @@ export function Contact({ content, footer }: ContactProps) {
           <Mail size={18} aria-hidden="true" />
           bonistudio.core@gmail.com
         </a>
-        <a href="https://github.com/" target="_blank" rel="noreferrer">
+        <a href="https://github.com/BoniStudio" target="_blank" rel="noreferrer">
           <Github size={18} aria-hidden="true" />
           {content.githubLabel}
         </a>
@@ -27,10 +26,6 @@ export function Contact({ content, footer }: ContactProps) {
           {content.socialLabel}
         </a>
       </div>
-      <div className="contact-panel__footer">
-        <span>{footer.tagline}</span>
-        <a href="#top">{footer.topLink}</a>
-      </div>
-    </footer>
+    </section>
   );
 }

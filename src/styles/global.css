@@ -522,6 +522,20 @@ html[lang="zh-CN"] .site-brand small {
     var(--panel);
   backdrop-filter: blur(18px);
   box-shadow: 0 22px 80px rgba(0, 0, 0, 0.22);
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.build-card:hover,
+.project-card:hover,
+.timeline-item:hover,
+.contact-panel:hover {
+  border-color: rgba(102, 249, 255, 0.32);
+  box-shadow:
+    0 22px 80px rgba(0, 0, 0, 0.24),
+    0 0 34px rgba(102, 249, 255, 0.12);
 }
 
 .build-card {
@@ -1079,7 +1093,7 @@ html[lang="zh-CN"] .site-brand small {
   width: min(1180px, calc(100% - 36px));
   grid-template-columns: 1.2fr 0.8fr;
   gap: 28px;
-  margin: 20px auto 34px;
+  margin: 20px auto 18px;
   border-radius: var(--radius);
   padding: clamp(28px, 5vw, 54px);
 }
@@ -1118,25 +1132,26 @@ html[lang="zh-CN"] .site-brand small {
   background: rgba(102, 249, 255, 0.07);
 }
 
-.contact-panel__footer {
+.site-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  grid-column: 1 / -1;
+  width: min(1180px, calc(100% - 36px));
   gap: 16px;
   border-top: 1px solid var(--line);
-  padding-top: 18px;
+  margin: 0 auto 34px;
+  padding: 18px 0 0;
   color: var(--faint);
   font-size: 0.82rem;
 }
 
-.contact-panel__footer a {
+.site-footer a {
   color: rgba(239, 247, 245, 0.78);
   font-weight: 650;
   transition: color 180ms ease;
 }
 
-.contact-panel__footer a:hover {
+.site-footer a:hover {
   color: var(--cyan);
 }
 
@@ -1385,7 +1400,7 @@ html[lang="zh-CN"] .site-brand small {
     width: min(100% - 28px, 1180px);
   }
 
-  .contact-panel__footer {
+  .site-footer {
     align-items: flex-start;
     flex-direction: column;
   }

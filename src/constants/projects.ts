@@ -1,1 +1,1 @@
-export type { ProjectAccent, ProjectContent as Project } from '../i18n/content';
+export type { Project, ProjectAccent } from '../data/projects';

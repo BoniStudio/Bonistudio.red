@@ -1,8 +1,8 @@
+import { composeProjects, type Project, type ProjectCopy } from '../data/projects';
+
 export const languages = ['en', 'zh'] as const;
 
 export type Language = (typeof languages)[number];
-
-export type ProjectAccent = 'cyan' | 'amber' | 'red' | 'violet' | 'green' | 'white';
 
 export type BuildAreaId = 'ai' | 'apps' | 'games' | 'worlds';
 export type PipelineNodeId = 'idea' | 'gpt' | 'claude' | 'codex' | 'build' | 'deploy' | 'users';
@@ -15,17 +15,7 @@ export type BuildAreaContent = {
   code: string;
 };
 
-export type ProjectContent = {
-  title: string;
-  subtitle: string;
-  description: string;
-  status: string;
-  year: string;
-  tags: string[];
-  accent: ProjectAccent;
-  signal: string;
-  span?: 'wide' | 'tall';
-};
+export type ProjectContent = Project;
 
 export type PipelineNodeContent = {
   id: PipelineNodeId;
@@ -88,7 +78,7 @@ export type SiteContent = {
     eyebrow: string;
     title: string;
     copy: string;
-    items: ProjectContent[];
+    items: Project[];
   };
   pipeline: {
     eyebrow: string;
@@ -142,7 +132,7 @@ export const content: Record<Language, SiteContent> = {
       brandAriaLabel: 'Back to top',
       languageLabel: 'Select language',
       items: [
-        { label: 'Build', href: '#build' },
+        { label: 'Home', href: '#top' },
         { label: 'Projects', href: '#projects' },
         { label: 'Pipeline', href: '#pipeline' },
         { label: 'Lab', href: '#lab' },
@@ -201,71 +191,62 @@ export const content: Record<Language, SiteContent> = {
       eyebrow: 'Projects',
       title: 'An archive of shipped apps, prototypes, and long-range worlds.',
       copy: 'Each project is treated like a living object: product logic, visual language, build system, and future memory.',
-      items: [
+      items: composeProjects([
         {
+          id: 'ovoCyberBeads',
           title: 'OvO Cyber Beads',
-          subtitle: 'Creative iOS app',
+          type: 'Creative iOS app',
           description: 'Pixel and perler-style digital beads for playful image building, pattern thinking, and tactile creation.',
           status: 'Shipped prototype',
           year: '2026',
           tags: ['iOS', 'Creative tool', 'Pixel craft'],
-          accent: 'cyan',
-          signal: 'OBC-01',
-          span: 'wide',
         },
         {
+          id: 'atMyTable',
           title: 'AtMyTable',
-          subtitle: 'Family coordination',
+          type: 'Family coordination',
           description: 'A gathering and food coordination app for families planning what to bring, cook, share, and remember.',
           status: 'Product concept',
           year: '2026',
           tags: ['Mobile', 'Family', 'Food ops'],
-          accent: 'amber',
-          signal: 'AMT-02',
         },
         {
+          id: 'shiLeMa',
           title: '屎了吗',
-          subtitle: 'Playful daily tracker',
+          type: 'Playful daily tracker',
           description: 'A deliberately light, daily poop tracking app with habit loops, tiny rituals, and memorable product tone.',
           status: 'Play lab',
           year: '2026',
           tags: ['Mobile', 'Habit', 'Health log'],
-          accent: 'green',
-          signal: 'SLA-03',
         },
         {
+          id: 'spaceStationVr',
           title: 'Space Station / VR Game',
-          subtitle: 'Long-term world project',
+          type: 'Long-term world project',
           description: 'A spatial interactive world prototype exploring station life, movement systems, object memory, and VR presence.',
           status: 'Long-range R&D',
           year: '2027 target',
           tags: ['VR', 'Game systems', 'Worldbuilding'],
-          accent: 'violet',
-          signal: 'SSV-04',
-          span: 'tall',
         },
         {
+          id: 'hcPetFashion',
           title: 'HC Pet Fashion',
-          subtitle: 'Commerce experiment',
+          type: 'Commerce experiment',
           description: 'A pet fashion commerce concept testing visual merchandising, small-brand storytelling, and AI-assisted catalog work.',
           status: 'Experiment',
           year: '2026',
           tags: ['Commerce', 'Brand', 'Pet fashion'],
-          accent: 'red',
-          signal: 'HCP-05',
         },
         {
+          id: 'bonistudioWebsite',
           title: 'BoniStudio Website',
-          subtitle: 'AI-native showcase',
+          type: 'AI-native showcase',
           description: 'This interactive studio archive: a living surface for products, games, AI workflow, and visual technology experiments.',
           status: 'Now online',
           year: '2026',
           tags: ['Three.js', 'R3F', 'AI studio'],
-          accent: 'white',
-          signal: 'BNS-06',
-          span: 'wide',
         },
-      ],
+      ]),
     },
     pipeline: {
       eyebrow: 'AI Pipeline',
@@ -315,7 +296,7 @@ export const content: Record<Language, SiteContent> = {
       socialAriaLabel: 'Social links',
     },
     footer: {
-      tagline: 'BoniStudio builds AI-native products, games, and interactive worlds.',
+      tagline: 'Building the future, one product at a time.',
       topLink: 'Top',
     },
   },
@@ -331,7 +312,7 @@ export const content: Record<Language, SiteContent> = {
       brandAriaLabel: '回到顶部',
       languageLabel: '选择语言',
       items: [
-        { label: '构建', href: '#build' },
+        { label: '首页', href: '#top' },
         { label: '项目', href: '#projects' },
         { label: '流程', href: '#pipeline' },
         { label: '实验室', href: '#lab' },
@@ -390,71 +371,62 @@ export const content: Record<Language, SiteContent> = {
       eyebrow: '项目',
       title: '收录已发布应用、原型和长期世界项目的档案。',
       copy: '每个项目都被当作一个活的对象来处理：产品逻辑、视觉语言、构建系统和未来记忆一起生长。',
-      items: [
+      items: composeProjects([
         {
+          id: 'ovoCyberBeads',
           title: 'OvO Cyber Beads',
-          subtitle: '创意 iOS 应用',
+          type: '创意 iOS 应用',
           description: '以像素和拼豆风格构建图像，让图案思维、触感创作和轻量玩具感自然结合。',
           status: '已发布原型',
           year: '2026',
           tags: ['iOS', '创意工具', '像素手作'],
-          accent: 'cyan',
-          signal: 'OBC-01',
-          span: 'wide',
         },
         {
+          id: 'atMyTable',
           title: 'AtMyTable',
-          subtitle: '家庭协作',
+          type: '家庭协作',
           description: '面向家庭聚餐的协作应用，用来计划谁带什么、做什么、分享什么，以及留下什么记忆。',
           status: '产品概念',
           year: '2026',
           tags: ['移动端', '家庭', '餐食协作'],
-          accent: 'amber',
-          signal: 'AMT-02',
         },
         {
+          id: 'shiLeMa',
           title: '屎了吗',
-          subtitle: '轻松日常记录',
+          type: '轻松日常记录',
           description: '一个刻意轻松的日常记录应用，用习惯循环、小仪式和鲜明语气降低健康记录的压力。',
           status: '玩法实验',
           year: '2026',
           tags: ['移动端', '习惯', '健康记录'],
-          accent: 'green',
-          signal: 'SLA-03',
         },
         {
+          id: 'spaceStationVr',
           title: 'Space Station / VR Game',
-          subtitle: '长期世界项目',
+          type: '长期世界项目',
           description: '一个空间互动世界原型，探索空间站生活、移动系统、物件记忆和 VR 临场感。',
           status: '长期研发',
           year: '2027 目标',
           tags: ['VR', '游戏系统', '世界构建'],
-          accent: 'violet',
-          signal: 'SSV-04',
-          span: 'tall',
         },
         {
+          id: 'hcPetFashion',
           title: 'HC Pet Fashion',
-          subtitle: '商业实验',
+          type: '商业实验',
           description: '宠物时尚电商概念，用于测试视觉陈列、小品牌叙事和 AI 辅助目录工作流。',
           status: '实验中',
           year: '2026',
           tags: ['电商', '品牌', '宠物时尚'],
-          accent: 'red',
-          signal: 'HCP-05',
         },
         {
+          id: 'bonistudioWebsite',
           title: 'BoniStudio Website',
-          subtitle: 'AI 原生展示面',
+          type: 'AI 原生展示面',
           description: '这个互动工作室档案，是产品、游戏、AI 工作流和视觉技术实验的动态展示面。',
           status: '已上线',
           year: '2026',
           tags: ['Three.js', 'R3F', 'AI 工作室'],
-          accent: 'white',
-          signal: 'BNS-06',
-          span: 'wide',
         },
-      ],
+      ]),
     },
     pipeline: {
       eyebrow: 'AI 流程',
@@ -504,7 +476,7 @@ export const content: Record<Language, SiteContent> = {
       socialAriaLabel: '社交链接',
     },
     footer: {
-      tagline: 'BoniStudio 构建 AI 原生产品、游戏与互动世界。',
+      tagline: '一次打造一个产品，慢慢建造未来。',
       topLink: '回到顶部',
     },
   },

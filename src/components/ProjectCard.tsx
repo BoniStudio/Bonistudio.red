@@ -1,6 +1,6 @@
 import { motion, useReducedMotion } from 'framer-motion';
 import { ExternalLink } from 'lucide-react';
-import type { Project } from '../constants/projects';
+import type { Project } from '../data/projects';
 
 type ProjectCardProps = {
   project: Project;
@@ -25,7 +25,7 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
         <span>{project.status}</span>
       </div>
       <div className="project-card__body">
-        <p>{project.subtitle}</p>
+        <p>{project.type}</p>
         <h3>{project.title}</h3>
         <span>{project.description}</span>
       </div>

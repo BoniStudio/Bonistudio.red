@@ -1,24 +1,17 @@
 import { useEffect, useState } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
-import { BrainCircuit, Gamepad2, Orbit, Smartphone } from 'lucide-react';
 import { Contact } from './components/Contact';
-import { HeroParticleScanner } from './components/HeroParticleScanner';
+import { Footer } from './components/Footer';
+import { Header } from './components/Header';
+import { Hero } from './components/Hero';
 import { InteractiveLab } from './components/InteractiveLab';
-import { PipelineGraph } from './components/PipelineGraph';
-import { ProjectCard } from './components/ProjectCard';
+import { Pipeline } from './components/Pipeline';
+import { Projects } from './components/Projects';
 import { SectionTitle } from './components/SectionTitle';
-import { SiteHeader } from './components/SiteHeader';
 import { Timeline } from './components/Timeline';
-import { content, type BuildAreaContent, type Language } from './i18n/content';
+import { WhatWeBuild } from './components/WhatWeBuild';
+import { content, type Language } from './i18n/content';
 
 const languageStorageKey = 'bonistudio.language';
-
-const buildIcons = {
-  ai: BrainCircuit,
-  apps: Smartphone,
-  games: Gamepad2,
-  worlds: Orbit,
-} satisfies Record<BuildAreaContent['id'], typeof BrainCircuit>;
 
 function getInitialLanguage(): Language {
   if (typeof window === 'undefined') {
@@ -50,7 +43,6 @@ function useCompactViewport() {
 function App() {
   const [language, setLanguage] = useState<Language>(getInitialLanguage);
   const isCompact = useCompactViewport();
-  const reducedMotion = useReducedMotion();
   const siteContent = content[language];
 
   useEffect(() => {
@@ -70,61 +62,16 @@ function App() {
 
   return (
     <>
-      <SiteHeader content={siteContent.nav} language={language} onLanguageChange={setLanguage} />
+      <Header content={siteContent.nav} language={language} onLanguageChange={setLanguage} />
 
       <main id="top">
-        <HeroParticleScanner content={siteContent.hero} isCompact={isCompact} />
+        <Hero content={siteContent.hero} isCompact={isCompact} />
 
-        <section className="section section--build" id="build">
-          <SectionTitle
-            eyebrow={siteContent.build.eyebrow}
-            title={siteContent.build.title}
-            copy={siteContent.build.copy}
-          />
-          <div className="build-grid">
-            {siteContent.build.areas.map((area, index) => {
-              const Icon = buildIcons[area.id];
-              return (
-                <motion.article
-                  className="build-card"
-                  key={area.id}
-                  initial={reducedMotion ? false : { opacity: 0, y: 24 }}
-                  whileInView={reducedMotion ? undefined : { opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: '-80px' }}
-                  transition={{ duration: 0.55, delay: index * 0.08 }}
-                >
-                  <span className="build-card__code">{area.code}</span>
-                  <Icon size={25} aria-hidden="true" />
-                  <h3>{area.title}</h3>
-                  <p>{area.copy}</p>
-                </motion.article>
-              );
-            })}
-          </div>
-        </section>
+        <WhatWeBuild content={siteContent.build} />
 
-        <section className="section section--projects" id="projects">
-          <SectionTitle
-            eyebrow={siteContent.projects.eyebrow}
-            title={siteContent.projects.title}
-            copy={siteContent.projects.copy}
-          />
-          <div className="project-gallery">
-            {siteContent.projects.items.map((project, index) => (
-              <ProjectCard project={project} index={index} key={project.signal} />
-            ))}
-          </div>
-        </section>
+        <Projects content={siteContent.projects} />
 
-        <section className="section section--pipeline" id="pipeline">
-          <SectionTitle
-            eyebrow={siteContent.pipeline.eyebrow}
-            title={siteContent.pipeline.title}
-            copy={siteContent.pipeline.copy}
-            align="center"
-          />
-          <PipelineGraph ariaLabel={siteContent.pipeline.ariaLabel} nodes={siteContent.pipeline.nodes} />
-        </section>
+        <Pipeline content={siteContent.pipeline} />
 
         <section className="section section--lab" id="lab">
           <SectionTitle
@@ -147,8 +94,9 @@ function App() {
           <Timeline items={siteContent.timeline.items} />
         </section>
 
-        <Contact content={siteContent.contact} footer={siteContent.footer} />
+        <Contact content={siteContent.contact} />
       </main>
+      <Footer content={siteContent.footer} />
     </>
   );
 }

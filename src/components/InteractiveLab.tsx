@@ -1,33 +1,36 @@
 import { useMemo, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Box, Crosshair, Database, ScanLine } from 'lucide-react';
+import type { LabModuleContent, LabModuleId } from '../i18n/content';
 
-type LabModule = {
-  id: 'scanner' | 'grid' | 'cursor' | 'archive';
-  title: string;
-  label: string;
-  metric: string;
-  icon: typeof ScanLine;
+const labIcons: Record<LabModuleId, typeof ScanLine> = {
+  scanner: ScanLine,
+  grid: Box,
+  cursor: Crosshair,
+  archive: Database,
 };
 
-const labModules: LabModule[] = [
-  { id: 'scanner', title: 'Particle Scanner', label: 'object reconstruction', metric: '5.6k particles', icon: ScanLine },
-  { id: 'grid', title: 'Neural Grid', label: 'latent routing map', metric: '42 nodes', icon: Box },
-  { id: 'cursor', title: 'Spatial Cursor', label: 'presence field', metric: 'live vector', icon: Crosshair },
-  { id: 'archive', title: 'Product Archive', label: 'interactive index', metric: '6 records', icon: Database },
-];
+type InteractiveLabProps = {
+  archiveItems: string[];
+  ariaLabel: string;
+  modules: LabModuleContent[];
+};
 
-export function InteractiveLab() {
-  const [activeId, setActiveId] = useState<LabModule['id']>('scanner');
+export function InteractiveLab({ archiveItems, ariaLabel, modules }: InteractiveLabProps) {
+  const [activeId, setActiveId] = useState<LabModuleContent['id']>('scanner');
   const [cursor, setCursor] = useState({ x: 52, y: 48 });
   const reducedMotion = useReducedMotion();
-  const activeModule = useMemo(() => labModules.find((module) => module.id === activeId) ?? labModules[0], [activeId]);
+  const activeModule = useMemo(() => modules.find((module) => module.id === activeId) ?? modules[0], [activeId, modules]);
+
+  if (!activeModule) {
+    return null;
+  }
 
   return (
     <div className="lab-shell">
-      <div className="lab-shell__switcher" role="tablist" aria-label="Interactive lab modules">
-        {labModules.map((module) => {
-          const Icon = module.icon;
+      <div className="lab-shell__switcher" role="tablist" aria-label={ariaLabel}>
+        {modules.map((module) => {
+          const Icon = labIcons[module.id];
           const isActive = module.id === activeId;
           return (
             <button
@@ -84,7 +87,7 @@ export function InteractiveLab() {
             <b />
           </div>
           <div className="lab-visual__archive">
-            {['OvO', 'AMT', 'SLA', 'VR', 'HCP', 'BNS'].map((item) => (
+            {archiveItems.map((item) => (
               <span key={item}>{item}</span>
             ))}
           </div>

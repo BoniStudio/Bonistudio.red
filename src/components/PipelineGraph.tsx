@@ -1,21 +1,24 @@
 import { motion, useReducedMotion } from 'framer-motion';
 import { Cpu, GitBranch, Rocket, Sparkles } from 'lucide-react';
+import type { PipelineNodeContent, PipelineNodeId } from '../i18n/content';
 
-const pipelineNodes = [
-  { label: 'Idea', detail: 'spark', icon: Sparkles },
-  { label: 'GPT', detail: 'strategy' },
-  { label: 'Claude', detail: 'systems' },
-  { label: 'Codex', detail: 'build', icon: Cpu },
-  { label: 'Build', detail: 'ship', icon: GitBranch },
-  { label: 'Deploy', detail: 'release', icon: Rocket },
-  { label: 'Users', detail: 'signal' },
-];
+const pipelineIcons: Partial<Record<PipelineNodeId, typeof Sparkles>> = {
+  idea: Sparkles,
+  codex: Cpu,
+  build: GitBranch,
+  deploy: Rocket,
+};
 
-export function PipelineGraph() {
+type PipelineGraphProps = {
+  ariaLabel: string;
+  nodes: PipelineNodeContent[];
+};
+
+export function PipelineGraph({ ariaLabel, nodes }: PipelineGraphProps) {
   const reducedMotion = useReducedMotion();
 
   return (
-    <div className="pipeline-rail" aria-label="AI-assisted creation pipeline">
+    <div className="pipeline-rail" aria-label={ariaLabel}>
       <div className="pipeline-rail__line" aria-hidden="true">
         {!reducedMotion ? (
           <>
@@ -31,12 +34,12 @@ export function PipelineGraph() {
         ) : null}
       </div>
       <div className="pipeline-rail__nodes">
-        {pipelineNodes.map((node, index) => {
-          const Icon = node.icon;
+        {nodes.map((node, index) => {
+          const Icon = pipelineIcons[node.id];
           return (
             <motion.div
               className="pipeline-node"
-              key={node.label}
+              key={node.id}
               initial={reducedMotion ? false : { opacity: 0, scale: 0.92 }}
               whileInView={reducedMotion ? undefined : { opacity: 1, scale: 1 }}
               viewport={{ once: true, margin: '-80px' }}

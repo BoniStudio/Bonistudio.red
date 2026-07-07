@@ -7,35 +7,31 @@ import { InteractiveLab } from './components/InteractiveLab';
 import { PipelineGraph } from './components/PipelineGraph';
 import { ProjectCard } from './components/ProjectCard';
 import { SectionTitle } from './components/SectionTitle';
+import { SiteHeader } from './components/SiteHeader';
 import { Timeline } from './components/Timeline';
-import { projects } from './constants/projects';
+import { content, type BuildAreaContent, type Language } from './i18n/content';
 
-const buildAreas = [
-  {
-    title: 'AI Products',
-    copy: 'AI-assisted tools, creative workflows, and product systems built around real user behavior.',
-    icon: BrainCircuit,
-    code: 'AI',
-  },
-  {
-    title: 'Mobile Apps',
-    copy: 'Focused iOS and mobile experiments with fast prototyping, clear loops, and tactile polish.',
-    icon: Smartphone,
-    code: 'APP',
-  },
-  {
-    title: 'Games',
-    copy: 'Play systems, progression ideas, mechanics prototypes, and expressive digital toys.',
-    icon: Gamepad2,
-    code: 'GAME',
-  },
-  {
-    title: 'Interactive Worlds',
-    copy: 'Spatial interfaces, VR concepts, world archives, and object-memory experiences.',
-    icon: Orbit,
-    code: 'VR',
-  },
-];
+const languageStorageKey = 'bonistudio.language';
+
+const buildIcons = {
+  ai: BrainCircuit,
+  apps: Smartphone,
+  games: Gamepad2,
+  worlds: Orbit,
+} satisfies Record<BuildAreaContent['id'], typeof BrainCircuit>;
+
+function getInitialLanguage(): Language {
+  if (typeof window === 'undefined') {
+    return 'en';
+  }
+
+  try {
+    const storedLanguage = window.localStorage.getItem(languageStorageKey);
+    return storedLanguage === 'zh' || storedLanguage === 'en' ? storedLanguage : 'en';
+  } catch {
+    return 'en';
+  }
+}
 
 function useCompactViewport() {
   const [isCompact, setIsCompact] = useState(false);
@@ -52,83 +48,108 @@ function useCompactViewport() {
 }
 
 function App() {
+  const [language, setLanguage] = useState<Language>(getInitialLanguage);
   const isCompact = useCompactViewport();
   const reducedMotion = useReducedMotion();
+  const siteContent = content[language];
+
+  useEffect(() => {
+    document.documentElement.lang = language === 'zh' ? 'zh-CN' : 'en';
+    document.body.dataset.language = language;
+    document.title = siteContent.meta.title;
+
+    const description = document.querySelector('meta[name="description"]');
+    description?.setAttribute('content', siteContent.meta.description);
+
+    try {
+      window.localStorage.setItem(languageStorageKey, language);
+    } catch {
+      // localStorage can be unavailable in restricted browsing modes.
+    }
+  }, [language, siteContent.meta.description, siteContent.meta.title]);
 
   return (
-    <main>
-      <HeroParticleScanner isCompact={isCompact} />
+    <>
+      <SiteHeader content={siteContent.nav} language={language} onLanguageChange={setLanguage} />
 
-      <section className="section section--build" id="build">
-        <SectionTitle
-          eyebrow="What We Build"
-          title="Product craft, game feel, AI systems, and spatial interfaces under one roof."
-          copy="BoniStudio is a small lab with a wide surface area: fast enough to prototype, technical enough to ship, visual enough to make the work memorable."
-        />
-        <div className="build-grid">
-          {buildAreas.map((area, index) => {
-            const Icon = area.icon;
-            return (
-              <motion.article
-                className="build-card"
-                key={area.title}
-                initial={reducedMotion ? false : { opacity: 0, y: 24 }}
-                whileInView={reducedMotion ? undefined : { opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-80px' }}
-                transition={{ duration: 0.55, delay: index * 0.08 }}
-              >
-                <span className="build-card__code">{area.code}</span>
-                <Icon size={25} aria-hidden="true" />
-                <h3>{area.title}</h3>
-                <p>{area.copy}</p>
-              </motion.article>
-            );
-          })}
-        </div>
-      </section>
+      <main id="top">
+        <HeroParticleScanner content={siteContent.hero} isCompact={isCompact} />
 
-      <section className="section section--projects" id="projects">
-        <SectionTitle
-          eyebrow="Projects"
-          title="An archive of shipped apps, prototypes, and long-range worlds."
-          copy="Each project is treated like a living object: product logic, visual language, build system, and future memory."
-        />
-        <div className="project-gallery">
-          {projects.map((project, index) => (
-            <ProjectCard project={project} index={index} key={project.title} />
-          ))}
-        </div>
-      </section>
+        <section className="section section--build" id="build">
+          <SectionTitle
+            eyebrow={siteContent.build.eyebrow}
+            title={siteContent.build.title}
+            copy={siteContent.build.copy}
+          />
+          <div className="build-grid">
+            {siteContent.build.areas.map((area, index) => {
+              const Icon = buildIcons[area.id];
+              return (
+                <motion.article
+                  className="build-card"
+                  key={area.id}
+                  initial={reducedMotion ? false : { opacity: 0, y: 24 }}
+                  whileInView={reducedMotion ? undefined : { opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-80px' }}
+                  transition={{ duration: 0.55, delay: index * 0.08 }}
+                >
+                  <span className="build-card__code">{area.code}</span>
+                  <Icon size={25} aria-hidden="true" />
+                  <h3>{area.title}</h3>
+                  <p>{area.copy}</p>
+                </motion.article>
+              );
+            })}
+          </div>
+        </section>
 
-      <section className="section section--pipeline" id="pipeline">
-        <SectionTitle
-          eyebrow="AI Pipeline"
-          title="Idea → GPT → Claude → Codex → Build → Deploy → Users"
-          copy="The production system is AI-assisted by default: human taste sets direction, models expand options, Codex turns intent into working surfaces, users close the loop."
-          align="center"
-        />
-        <PipelineGraph />
-      </section>
+        <section className="section section--projects" id="projects">
+          <SectionTitle
+            eyebrow={siteContent.projects.eyebrow}
+            title={siteContent.projects.title}
+            copy={siteContent.projects.copy}
+          />
+          <div className="project-gallery">
+            {siteContent.projects.items.map((project, index) => (
+              <ProjectCard project={project} index={index} key={project.signal} />
+            ))}
+          </div>
+        </section>
 
-      <section className="section section--lab" id="lab">
-        <SectionTitle
-          eyebrow="Interactive Lab"
-          title="Small technical experiments that make the archive feel alive."
-          copy="Particle reconstruction, neural maps, spatial cursors, and product records are mocked as a first lab surface for future deeper experiments."
-        />
-        <InteractiveLab />
-      </section>
+        <section className="section section--pipeline" id="pipeline">
+          <SectionTitle
+            eyebrow={siteContent.pipeline.eyebrow}
+            title={siteContent.pipeline.title}
+            copy={siteContent.pipeline.copy}
+            align="center"
+          />
+          <PipelineGraph ariaLabel={siteContent.pipeline.ariaLabel} nodes={siteContent.pipeline.nodes} />
+        </section>
 
-      <section className="section section--timeline" id="timeline">
-        <SectionTitle
-          eyebrow="Timeline"
-          title="The studio grows as an archive, not a pitch deck."
-        />
-        <Timeline />
-      </section>
+        <section className="section section--lab" id="lab">
+          <SectionTitle
+            eyebrow={siteContent.lab.eyebrow}
+            title={siteContent.lab.title}
+            copy={siteContent.lab.copy}
+          />
+          <InteractiveLab
+            archiveItems={siteContent.lab.archiveItems}
+            ariaLabel={siteContent.lab.ariaLabel}
+            modules={siteContent.lab.modules}
+          />
+        </section>
 
-      <Contact />
-    </main>
+        <section className="section section--timeline" id="timeline">
+          <SectionTitle
+            eyebrow={siteContent.timeline.eyebrow}
+            title={siteContent.timeline.title}
+          />
+          <Timeline items={siteContent.timeline.items} />
+        </section>
+
+        <Contact content={siteContent.contact} footer={siteContent.footer} />
+      </main>
+    </>
   );
 }
 

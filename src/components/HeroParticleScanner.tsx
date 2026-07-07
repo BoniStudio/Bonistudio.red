@@ -3,6 +3,7 @@ import { ArrowDownRight, FlaskConical } from 'lucide-react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Component, useMemo, useRef, type ErrorInfo, type ReactNode } from 'react';
 import * as THREE from 'three';
+import type { SiteContent } from '../i18n/content';
 
 const vertexShader = `
   uniform float uTime;
@@ -346,10 +347,11 @@ function HologramFrame({ reducedMotion }: { reducedMotion: boolean }) {
 }
 
 type HeroParticleScannerProps = {
+  content: SiteContent['hero'];
   isCompact: boolean;
 };
 
-export function HeroParticleScanner({ isCompact }: HeroParticleScannerProps) {
+export function HeroParticleScanner({ content, isCompact }: HeroParticleScannerProps) {
   const reducedMotion = Boolean(useReducedMotion());
   const webGLAvailable = useMemo(getWebGLAvailability, []);
   const count = reducedMotion ? 1500 : isCompact ? 2600 : 5600;
@@ -380,12 +382,12 @@ export function HeroParticleScanner({ isCompact }: HeroParticleScannerProps) {
         <div className="hero__scanner-line" />
         <div className="hero__noise" />
         <div className="hero__telemetry hero__telemetry--left">
-          <span>BNS//RECONSTRUCT</span>
-          <strong>volumetric archive online</strong>
+          <span>{content.telemetryLeft.label}</span>
+          <strong>{content.telemetryLeft.value}</strong>
         </div>
         <div className="hero__telemetry hero__telemetry--right">
-          <span>signal 06</span>
-          <strong>AI-native studio</strong>
+          <span>{content.telemetryRight.label}</span>
+          <strong>{content.telemetryRight.value}</strong>
         </div>
       </div>
 
@@ -395,15 +397,15 @@ export function HeroParticleScanner({ isCompact }: HeroParticleScannerProps) {
         animate={reducedMotion ? undefined : { opacity: 1, y: 0 }}
         transition={{ duration: 0.9, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
       >
-        <p className="hero__kicker">BoniStudio / interactive archive 001</p>
-        <h1 id="hero-title">BoniStudio</h1>
-        <p className="hero__subtitle">AI-native products, games, and interactive worlds.</p>
-        <div className="hero__actions" aria-label="Primary">
+        <p className="hero__kicker">{content.kicker}</p>
+        <h1 id="hero-title">{content.title}</h1>
+        <p className="hero__subtitle">{content.subtitle}</p>
+        <div className="hero__actions" aria-label={content.actionsLabel}>
           <a className="button button--primary" href="#projects">
-            Explore Projects <ArrowDownRight size={18} aria-hidden="true" />
+            {content.primaryCta} <ArrowDownRight size={18} aria-hidden="true" />
           </a>
           <a className="button button--ghost" href="#lab">
-            View Lab <FlaskConical size={18} aria-hidden="true" />
+            {content.secondaryCta} <FlaskConical size={18} aria-hidden="true" />
           </a>
         </div>
       </motion.div>

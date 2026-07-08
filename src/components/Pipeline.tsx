@@ -14,6 +14,7 @@ export function Pipeline({ content }: PipelineProps) {
         title={content.title}
         copy={content.copy}
         align="center"
+        accent="purple"
       />
       <PipelineGraph ariaLabel={content.ariaLabel} nodes={content.nodes} />
     </section>

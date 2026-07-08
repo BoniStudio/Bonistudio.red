@@ -19,7 +19,7 @@ export function WhatWeBuild({ content }: WhatWeBuildProps) {
 
   return (
     <section className="section section--build" id="build">
-      <SectionTitle eyebrow={content.eyebrow} title={content.title} copy={content.copy} />
+      <SectionTitle eyebrow={content.eyebrow} title={content.title} copy={content.copy} accent="lime" />
       <div className="build-grid">
         {content.areas.map((area, index) => {
           const Icon = buildIcons[area.id];

@@ -12,7 +12,12 @@ export function Header({ content, language, onLanguageChange }: HeaderProps) {
     <header className="site-header">
       <div className="site-header__inner">
         <a className="site-brand" href="#top" aria-label={content.brandAriaLabel}>
-          <span>{content.brand}</span>
+          <span className="site-brand__word" aria-label={content.brand}>
+            <span className="site-brand__letter site-brand__letter--b">B</span>
+            oni
+            <span className="site-brand__letter site-brand__letter--s">S</span>
+            tudio
+          </span>
           <small>{content.kicker}</small>
         </a>
 

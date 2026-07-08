@@ -1,5 +1,6 @@
 import { Github, Mail, Radio } from 'lucide-react';
 import type { SiteContent } from '../i18n/content';
+import { AccentTitle } from './AccentTitle';
 
 type ContactProps = {
   content: SiteContent['contact'];
@@ -10,7 +11,7 @@ export function Contact({ content }: ContactProps) {
     <section className="contact-panel" id="contact">
       <div>
         <p>{content.eyebrow}</p>
-        <h2>{content.title}</h2>
+        <AccentTitle text={content.title} accent="cyan" />
       </div>
       <div className="contact-panel__links">
         <a href="mailto:bonistudio.core@gmail.com" aria-label={content.emailLabel}>

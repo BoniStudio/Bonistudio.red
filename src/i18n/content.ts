@@ -36,6 +36,12 @@ export type TimelineItemContent = {
   detail: string;
 };
 
+export type HeroStatContent = {
+  label: string;
+  value: string;
+  tone: 'cyan' | 'lime' | 'purple' | 'amber' | 'white';
+};
+
 export type SiteContent = {
   meta: {
     title: string;
@@ -67,6 +73,7 @@ export type SiteContent = {
       label: string;
       value: string;
     };
+    stats: HeroStatContent[];
   };
   build: {
     eyebrow: string;
@@ -155,6 +162,13 @@ export const content: Record<Language, SiteContent> = {
         label: 'signal 06',
         value: 'AI-native studio',
       },
+      stats: [
+        { label: 'Projects', value: '6', tone: 'cyan' },
+        { label: 'Build Tracks', value: '4', tone: 'lime' },
+        { label: 'Pipeline', value: '7 steps', tone: 'purple' },
+        { label: 'Founded', value: '2026', tone: 'amber' },
+        { label: 'GitHub', value: 'BoniStudio', tone: 'white' },
+      ],
     },
     build: {
       eyebrow: 'What We Build',
@@ -335,6 +349,13 @@ export const content: Record<Language, SiteContent> = {
         label: '信号 06',
         value: 'AI 原生工作室',
       },
+      stats: [
+        { label: '项目', value: '6', tone: 'cyan' },
+        { label: '构建方向', value: '4', tone: 'lime' },
+        { label: '生产流程', value: '7 步', tone: 'purple' },
+        { label: '成立时间', value: '2026', tone: 'amber' },
+        { label: 'GitHub', value: 'BoniStudio', tone: 'white' },
+      ],
     },
     build: {
       eyebrow: '我们构建什么',

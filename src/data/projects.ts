@@ -8,7 +8,7 @@ export const projectIds = [
 ] as const;
 
 export type ProjectId = (typeof projectIds)[number];
-export type ProjectAccent = 'cyan' | 'amber' | 'red' | 'violet' | 'green' | 'white';
+export type ProjectAccent = 'cyan' | 'amber' | 'purple' | 'lime' | 'white';
 
 export type ProjectMeta = {
   id: ProjectId;
@@ -51,18 +51,18 @@ export const projectMeta: Record<ProjectId, ProjectMeta> = {
   shiLeMa: {
     id: 'shiLeMa',
     signal: 'SLA-03',
-    accent: 'green',
+    accent: 'lime',
   },
   spaceStationVr: {
     id: 'spaceStationVr',
     signal: 'SSV-04',
-    accent: 'violet',
+    accent: 'purple',
     span: 'tall',
   },
   hcPetFashion: {
     id: 'hcPetFashion',
     signal: 'HCP-05',
-    accent: 'red',
+    accent: 'amber',
   },
   bonistudioWebsite: {
     id: 'bonistudioWebsite',

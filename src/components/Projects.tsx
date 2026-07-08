@@ -9,7 +9,7 @@ type ProjectsProps = {
 export function Projects({ content }: ProjectsProps) {
   return (
     <section className="section section--projects" id="projects">
-      <SectionTitle eyebrow={content.eyebrow} title={content.title} copy={content.copy} />
+      <SectionTitle eyebrow={content.eyebrow} title={content.title} copy={content.copy} accent="cyan" />
       <div className="project-gallery">
         {content.items.map((project, index) => (
           <ProjectCard project={project} index={index} key={project.id} />

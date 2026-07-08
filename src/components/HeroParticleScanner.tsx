@@ -1,74 +1,86 @@
 import { Canvas, useFrame } from '@react-three/fiber';
 import { ArrowDownRight, FlaskConical } from 'lucide-react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { Component, useMemo, useRef, type ErrorInfo, type ReactNode } from 'react';
+import { Component, useMemo, useRef, type CSSProperties, type ErrorInfo, type ReactNode } from 'react';
 import * as THREE from 'three';
 import type { SiteContent } from '../i18n/content';
 
-const vertexShader = `
+const earthVertexShader = `
   uniform float uTime;
-  uniform float uScan;
   uniform float uPixelRatio;
   uniform vec2 uMouse;
   attribute float aSeed;
-  attribute float aAccent;
-  varying float vLight;
-  varying float vAccent;
+  attribute float aTone;
+  attribute float aDetach;
+  attribute float aSignal;
+  varying float vAlpha;
+  varying float vTone;
+  varying float vSignal;
+  varying float vDetach;
 
   void main() {
-    vec3 base = position;
-    float scan = smoothstep(-1.42, uScan, base.y);
-    float frontier = 1.0 - smoothstep(0.0, 0.22, abs(base.y - uScan));
-    float breath = sin(uTime * 1.2 + aSeed * 9.7) * 0.018;
-    float noise = sin(base.x * 8.0 + uTime * 0.82 + aSeed * 12.0) *
-      cos(base.z * 7.0 - uTime * 0.55 + aSeed * 6.0);
-    float drift = mix(0.2, 0.035, scan);
+    vec3 direction = normalize(position);
+    vec3 tangent = normalize(cross(direction, vec3(0.0, 1.0, 0.0)) + vec3(0.001, 0.0, 0.0));
+    vec3 side = normalize(cross(direction, tangent));
+    float lane = sin((direction.x * 10.0) + (direction.y * 18.0) + uTime * 0.68 + aSeed * 7.0);
+    float pulse = sin(uTime * (0.32 + aTone * 0.5) + aSeed * 19.0);
+    float stream = smoothstep(0.45, 1.0, lane) * (0.012 + aSignal * 0.025);
+    float breathing = pulse * (0.006 + aDetach * 0.035);
 
-    vec3 dir = normalize(vec3(
-      sin(aSeed * 41.0),
-      cos(aSeed * 29.0),
-      sin(aSeed * 17.0)
-    ));
-
-    vec3 pos = base + dir * noise * drift;
-    pos.x += uMouse.x * (0.08 + aSeed * 0.05) * scan;
-    pos.y += uMouse.y * 0.035 * scan + breath * scan;
-    pos.z += sin(uTime * 0.7 + base.x * 4.0) * 0.035 * scan;
+    vec3 pos = position;
+    pos += tangent * (stream + breathing);
+    pos += side * sin(uTime * 0.2 + aSeed * 13.0) * 0.008;
+    pos += direction * (sin(uTime * 0.42 + aSeed * 23.0) * 0.012 + aDetach * 0.04);
+    pos.x += uMouse.x * (0.035 + aDetach * 0.055);
+    pos.y += uMouse.y * (0.022 + aDetach * 0.035);
 
     vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
     gl_Position = projectionMatrix * mvPosition;
 
-    float size = 2.0 + frontier * 4.8 + aAccent * 1.4;
-    gl_PointSize = size * uPixelRatio * (4.2 / max(1.1, -mvPosition.z));
-    vLight = clamp(0.09 + scan * 0.76 + frontier * 0.7 + breath * 3.0, 0.0, 1.0);
-    vAccent = aAccent;
+    float distanceScale = 5.2 / max(2.1, -mvPosition.z);
+    float pointSize = mix(1.2, 2.55, aSignal) + aDetach * 0.68 + stream * 44.0;
+    gl_PointSize = pointSize * uPixelRatio * distanceScale;
+    vAlpha = (0.34 + aSignal * 0.62 + stream * 5.2) * (1.0 - aDetach * 0.22);
+    vTone = aTone;
+    vSignal = aSignal;
+    vDetach = aDetach;
   }
 `;
 
-const fragmentShader = `
+const earthFragmentShader = `
   precision mediump float;
-  varying float vLight;
-  varying float vAccent;
+  varying float vAlpha;
+  varying float vTone;
+  varying float vSignal;
+  varying float vDetach;
 
   void main() {
-    vec2 center = gl_PointCoord - vec2(0.5);
-    float d = length(center);
-    float alpha = smoothstep(0.5, 0.08, d) * vLight;
-    vec3 cyan = vec3(0.32, 0.95, 1.0);
-    vec3 white = vec3(0.9, 1.0, 0.96);
-    vec3 amber = vec3(1.0, 0.69, 0.28);
-    vec3 violet = vec3(0.72, 0.58, 1.0);
-    vec3 base = mix(cyan, white, vLight);
-    vec3 accent = mix(amber, violet, step(0.78, vAccent));
-    vec3 color = mix(base, accent, smoothstep(0.7, 1.0, vAccent) * 0.52);
+    vec2 point = gl_PointCoord - vec2(0.5);
+    float d = length(point);
+    float softDot = smoothstep(0.5, 0.08, d);
+    float core = smoothstep(0.26, 0.0, d);
+    vec3 white = vec3(0.9, 0.96, 0.95);
+    vec3 graphite = vec3(0.34, 0.39, 0.4);
+    vec3 cyan = vec3(0.0, 0.9, 1.0);
+    vec3 lime = vec3(0.71, 1.0, 0.36);
+    vec3 purple = vec3(0.66, 0.33, 0.97);
+    vec3 amber = vec3(0.96, 0.62, 0.08);
+    vec3 accent = mix(cyan, lime, smoothstep(0.18, 0.48, vTone));
+    accent = mix(accent, purple, smoothstep(0.52, 0.78, vTone) * 0.7);
+    accent = mix(accent, amber, smoothstep(0.84, 1.0, vTone) * 0.55);
+    vec3 base = mix(graphite, white, 0.42 + vSignal * 0.42);
+    vec3 color = mix(base, accent, 0.2 + vSignal * 0.28 + vDetach * 0.12);
+    float alpha = softDot * vAlpha + core * 0.16;
     gl_FragColor = vec4(color, alpha);
   }
 `;
 
-type ParticleCloud = {
+type EarthParticleData = {
   positions: Float32Array;
   seeds: Float32Array;
-  accents: Float32Array;
+  tones: Float32Array;
+  detaches: Float32Array;
+  signals: Float32Array;
 };
 
 type ParticleErrorBoundaryProps = {
@@ -93,7 +105,7 @@ class ParticleErrorBoundary extends Component<
   }
 
   componentDidCatch(error: unknown, errorInfo: ErrorInfo) {
-    console.error('Hero particle scene failed; using static fallback.', error, errorInfo.componentStack);
+    console.error('Particle earth scene failed; using static fallback.', error, errorInfo.componentStack);
   }
 
   render() {
@@ -122,10 +134,6 @@ function getWebGLAvailability() {
   }
 }
 
-function HeroCanvasFallback() {
-  return <div className="hero__canvas-fallback" aria-hidden="true" />;
-}
-
 function createRandom(seed = 7) {
   let state = seed;
   return () => {
@@ -134,170 +142,161 @@ function createRandom(seed = 7) {
   };
 }
 
-function pushLineParticle(
-  target: number[],
-  from: THREE.Vector3,
-  to: THREE.Vector3,
-  t: number,
-  jitter: number,
-  random: () => number,
-) {
-  const point = from.clone().lerp(to, t);
-  point.x += (random() - 0.5) * jitter;
-  point.y += (random() - 0.5) * jitter;
-  point.z += (random() - 0.5) * jitter;
-  target.push(point.x, point.y, point.z);
+function signalFromDirection(direction: THREE.Vector3) {
+  const longitude = Math.atan2(direction.z, direction.x);
+  const latitude = Math.asin(direction.y);
+  const wave =
+    Math.sin(longitude * 2.4 + latitude * 6.2) +
+    Math.sin(longitude * 5.7 - latitude * 3.1) * 0.62 +
+    Math.cos(longitude * 8.8 + latitude * 1.7) * 0.38;
+  return THREE.MathUtils.clamp((wave + 1.55) / 3.1, 0.05, 1);
 }
 
-function generateParticles(count: number): ParticleCloud {
-  const random = createRandom(42);
-  const rawPositions: number[] = [];
-  const cubeCorners = [
-    new THREE.Vector3(-1.25, -0.82, -0.62),
-    new THREE.Vector3(1.25, -0.82, -0.62),
-    new THREE.Vector3(1.25, 0.82, -0.62),
-    new THREE.Vector3(-1.25, 0.82, -0.62),
-    new THREE.Vector3(-1.25, -0.82, 0.62),
-    new THREE.Vector3(1.25, -0.82, 0.62),
-    new THREE.Vector3(1.25, 0.82, 0.62),
-    new THREE.Vector3(-1.25, 0.82, 0.62),
-  ];
-  const cubeEdges = [
-    [0, 1],
-    [1, 2],
-    [2, 3],
-    [3, 0],
-    [4, 5],
-    [5, 6],
-    [6, 7],
-    [7, 4],
-    [0, 4],
-    [1, 5],
-    [2, 6],
-    [3, 7],
-  ] as const;
-
-  for (let i = 0; i < count; i += 1) {
-    const mode = random();
-
-    if (mode < 0.42) {
-      const theta = random() * Math.PI * 2;
-      const phi = Math.acos(2 * random() - 1);
-      const cubeFactor = 0.68 + random() * 0.26;
-      const radius = 0.48 + random() * 0.34;
-      const x = Math.sin(phi) * Math.cos(theta);
-      const y = Math.cos(phi);
-      const z = Math.sin(phi) * Math.sin(theta);
-      const maxAxis = Math.max(Math.abs(x), Math.abs(y), Math.abs(z));
-      rawPositions.push(
-        (x / maxAxis) * radius * cubeFactor,
-        (y / maxAxis) * radius * cubeFactor,
-        (z / maxAxis) * radius * cubeFactor,
-      );
-    } else if (mode < 0.72) {
-      const theta = random() * Math.PI * 2;
-      const ring = random() > 0.45 ? 1.0 : 0.66;
-      const radius = 1.05 * ring + Math.sin(theta * 3.0) * 0.05;
-      const tilt = (random() - 0.5) * 0.22;
-      rawPositions.push(
-        Math.cos(theta) * radius,
-        Math.sin(theta * 2.0) * 0.08 + tilt,
-        Math.sin(theta) * radius * 0.42,
-      );
-    } else if (mode < 0.9) {
-      const edge = cubeEdges[Math.floor(random() * cubeEdges.length)];
-      pushLineParticle(
-        rawPositions,
-        cubeCorners[edge[0]],
-        cubeCorners[edge[1]],
-        random(),
-        0.04,
-        random,
-      );
-    } else {
-      const y = -0.95 + random() * 1.9;
-      const theta = random() * Math.PI * 2;
-      const radius = 0.18 + random() * 1.05;
-      rawPositions.push(
-        Math.cos(theta) * radius,
-        y,
-        Math.sin(theta) * radius * 0.48,
-      );
-    }
-  }
-
-  const positions = new Float32Array(rawPositions);
+function createEarthParticleData(count: number): EarthParticleData {
+  const random = createRandom(137);
+  const positions = new Float32Array(count * 3);
   const seeds = new Float32Array(count);
-  const accents = new Float32Array(count);
+  const tones = new Float32Array(count);
+  const detaches = new Float32Array(count);
+  const signals = new Float32Array(count);
+  const goldenAngle = Math.PI * (3 - Math.sqrt(5));
+  const direction = new THREE.Vector3();
 
   for (let i = 0; i < count; i += 1) {
+    const y = 1 - (i / Math.max(1, count - 1)) * 2;
+    const radiusAtY = Math.sqrt(1 - y * y);
+    const theta = i * goldenAngle;
+    direction.set(Math.cos(theta) * radiusAtY, y, Math.sin(theta) * radiusAtY).normalize();
+
+    const signal = signalFromDirection(direction);
+    const detach = random() > 0.925 ? random() : 0;
+    const radius = detach > 0
+      ? 1.5 + detach * 0.72 + random() * 0.08
+      : 1.42 + (signal - 0.5) * 0.025 + random() * 0.018;
+    const jitter = detach > 0 ? 0.03 + detach * 0.04 : 0.006;
+
+    positions[i * 3] = direction.x * radius + (random() - 0.5) * jitter;
+    positions[i * 3 + 1] = direction.y * radius + (random() - 0.5) * jitter;
+    positions[i * 3 + 2] = direction.z * radius + (random() - 0.5) * jitter;
     seeds[i] = random();
-    const y = positions[i * 3 + 1];
-    const isRing = Math.abs(y) < 0.16 && random() > 0.45;
-    accents[i] = isRing ? 0.86 + random() * 0.14 : random() * 0.68;
+    tones[i] = random();
+    detaches[i] = detach;
+    signals[i] = Math.pow(signal, 1.45);
   }
 
-  return { positions, seeds, accents };
+  return { positions, seeds, tones, detaches, signals };
 }
 
-type ScannerPointsProps = {
-  count: number;
-  reducedMotion: boolean;
-};
+function getEarthParticleCount(isCompact: boolean, reducedMotion: boolean) {
+  if (reducedMotion) {
+    return 14000;
+  }
 
-function ScannerPoints({ count, reducedMotion }: ScannerPointsProps) {
-  const materialRef = useRef<THREE.ShaderMaterial>(null);
+  if (isCompact) {
+    return 42000;
+  }
+
+  if (typeof navigator === 'undefined') {
+    return 120000;
+  }
+
+  const cores = navigator.hardwareConcurrency ?? 8;
+  const memory = 'deviceMemory' in navigator ? Number(navigator.deviceMemory) : 8;
+
+  if (cores <= 4 || memory <= 4) {
+    return 86000;
+  }
+
+  return 180000;
+}
+
+function createConnectionGeometry(segmentCount: number) {
+  const random = createRandom(404);
+  const positions: number[] = [];
+  const radius = 1.53;
+
+  for (let i = 0; i < segmentCount; i += 1) {
+    const latA = (random() - 0.5) * Math.PI * 0.92;
+    const lonA = random() * Math.PI * 2;
+    const latB = THREE.MathUtils.clamp(latA + (random() - 0.5) * 0.7, -1.2, 1.2);
+    const lonB = lonA + (random() - 0.5) * 0.95;
+    const a = new THREE.Vector3(
+      Math.cos(latA) * Math.cos(lonA),
+      Math.sin(latA),
+      Math.cos(latA) * Math.sin(lonA),
+    ).multiplyScalar(radius + random() * 0.05);
+    const b = new THREE.Vector3(
+      Math.cos(latB) * Math.cos(lonB),
+      Math.sin(latB),
+      Math.cos(latB) * Math.sin(lonB),
+    ).multiplyScalar(radius + random() * 0.05);
+
+    positions.push(a.x, a.y, a.z, b.x, b.y, b.z);
+  }
+
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  return geometry;
+}
+
+function HeroCanvasFallback() {
+  return (
+    <div className="particle-earth-fallback" aria-hidden="true">
+      {Array.from({ length: 96 }).map((_, index) => (
+        <span key={index} style={{ '--fallback-index': index } as CSSProperties} />
+      ))}
+    </div>
+  );
+}
+
+function ParticleEarth({ count, reducedMotion }: { count: number; reducedMotion: boolean }) {
   const groupRef = useRef<THREE.Group>(null);
+  const materialRef = useRef<THREE.ShaderMaterial>(null);
   const mouse = useRef(new THREE.Vector2());
-  const startTime = useRef<number | null>(null);
-  const particleData = useMemo(() => generateParticles(count), [count]);
-
+  const particleData = useMemo(() => createEarthParticleData(count), [count]);
+  const lineGeometry = useMemo(() => createConnectionGeometry(count > 100000 ? 150 : 82), [count]);
   const uniforms = useMemo(
     () => ({
       uTime: { value: 0 },
-      uScan: { value: reducedMotion ? 1.8 : -1.55 },
-      uPixelRatio: { value: Math.min(window.devicePixelRatio, 1.8) },
+      uPixelRatio: { value: typeof window === 'undefined' ? 1 : Math.min(window.devicePixelRatio, 1.65) },
       uMouse: { value: new THREE.Vector2() },
     }),
-    [reducedMotion],
+    [],
   );
 
   useFrame((state) => {
-    if (!materialRef.current || !groupRef.current) {
+    if (!groupRef.current || !materialRef.current) {
       return;
     }
 
-    if (startTime.current === null) {
-      startTime.current = state.clock.elapsedTime;
-    }
-
-    const scanStart = startTime.current;
-    const elapsed = state.clock.elapsedTime - scanStart;
-    mouse.current.lerp(state.pointer, 0.07);
+    mouse.current.lerp(state.pointer, 0.045);
     materialRef.current.uniforms.uMouse.value.copy(mouse.current);
-    materialRef.current.uniforms.uTime.value = state.clock.elapsedTime;
-    materialRef.current.uniforms.uScan.value = reducedMotion
-      ? 1.8
-      : THREE.MathUtils.clamp(-1.55 + elapsed * 0.72, -1.55, 1.7);
-    groupRef.current.rotation.y = reducedMotion ? -0.18 : -0.18 + Math.sin(state.clock.elapsedTime * 0.18) * 0.12;
-    groupRef.current.rotation.x = reducedMotion ? 0.08 : 0.08 + Math.sin(state.clock.elapsedTime * 0.12) * 0.04;
+    materialRef.current.uniforms.uTime.value = reducedMotion ? 0 : state.clock.elapsedTime;
+    groupRef.current.rotation.y = -0.32 + state.clock.elapsedTime * (reducedMotion ? 0 : 0.045) + mouse.current.x * 0.08;
+    groupRef.current.rotation.x = 0.08 + mouse.current.y * 0.045;
+    groupRef.current.rotation.z = -0.08;
   });
 
   return (
     <group ref={groupRef}>
-      <points>
+      <lineSegments geometry={lineGeometry}>
+        <lineBasicMaterial color="#8beeff" transparent opacity={0.16} blending={THREE.AdditiveBlending} />
+      </lineSegments>
+      <points frustumCulled={false}>
         <bufferGeometry>
           <bufferAttribute attach="attributes-position" args={[particleData.positions, 3]} />
           <bufferAttribute attach="attributes-aSeed" args={[particleData.seeds, 1]} />
-          <bufferAttribute attach="attributes-aAccent" args={[particleData.accents, 1]} />
+          <bufferAttribute attach="attributes-aTone" args={[particleData.tones, 1]} />
+          <bufferAttribute attach="attributes-aDetach" args={[particleData.detaches, 1]} />
+          <bufferAttribute attach="attributes-aSignal" args={[particleData.signals, 1]} />
         </bufferGeometry>
         <shaderMaterial
           ref={materialRef}
           args={[
             {
               uniforms,
-              vertexShader,
-              fragmentShader,
+              vertexShader: earthVertexShader,
+              fragmentShader: earthFragmentShader,
               transparent: true,
               depthWrite: false,
               blending: THREE.AdditiveBlending,
@@ -309,40 +308,30 @@ function ScannerPoints({ count, reducedMotion }: ScannerPointsProps) {
   );
 }
 
-function HologramFrame({ reducedMotion }: { reducedMotion: boolean }) {
-  const frameRef = useRef<THREE.LineSegments>(null);
-  const geometry = useMemo(() => {
-    const points = [
-      -1.35, -0.9, -0.7, 1.35, -0.9, -0.7,
-      1.35, -0.9, -0.7, 1.35, 0.9, -0.7,
-      1.35, 0.9, -0.7, -1.35, 0.9, -0.7,
-      -1.35, 0.9, -0.7, -1.35, -0.9, -0.7,
-      -1.35, -0.9, 0.7, 1.35, -0.9, 0.7,
-      1.35, -0.9, 0.7, 1.35, 0.9, 0.7,
-      1.35, 0.9, 0.7, -1.35, 0.9, 0.7,
-      -1.35, 0.9, 0.7, -1.35, -0.9, 0.7,
-      -1.35, -0.9, -0.7, -1.35, -0.9, 0.7,
-      1.35, -0.9, -0.7, 1.35, -0.9, 0.7,
-      1.35, 0.9, -0.7, 1.35, 0.9, 0.7,
-      -1.35, 0.9, -0.7, -1.35, 0.9, 0.7,
-    ];
-    const buffer = new THREE.BufferGeometry();
-    buffer.setAttribute('position', new THREE.Float32BufferAttribute(points, 3));
-    return buffer;
-  }, []);
-
-  useFrame((state) => {
-    if (!frameRef.current || reducedMotion) {
-      return;
-    }
-    frameRef.current.rotation.y = -0.18 + Math.sin(state.clock.elapsedTime * 0.2) * 0.08;
-    frameRef.current.rotation.x = 0.08 + Math.sin(state.clock.elapsedTime * 0.14) * 0.03;
-  });
-
+function HeroBrandTitle({ title, reducedMotion }: { title: string; reducedMotion: boolean }) {
   return (
-    <lineSegments ref={frameRef} geometry={geometry}>
-      <lineBasicMaterial color="#66f9ff" transparent opacity={0.16} />
-    </lineSegments>
+    <h1 id="hero-title" aria-label={title}>
+      {Array.from(title).map((letter, index) => {
+        const className = [
+          'hero-title__letter',
+          letter === 'B' ? 'hero-title__letter--b' : '',
+          letter === 'S' ? 'hero-title__letter--s' : '',
+        ].filter(Boolean).join(' ');
+
+        return (
+          <motion.span
+            aria-hidden="true"
+            className={className}
+            initial={reducedMotion ? false : { opacity: 0, y: 18, filter: 'blur(10px)' }}
+            animate={reducedMotion ? undefined : { opacity: 1, y: 0, filter: 'blur(0px)' }}
+            transition={{ duration: 0.62, delay: 0.18 + index * 0.035, ease: [0.22, 1, 0.36, 1] }}
+            key={`${letter}-${index}`}
+          >
+            {letter}
+          </motion.span>
+        );
+      })}
+    </h1>
   );
 }
 
@@ -354,60 +343,70 @@ type HeroParticleScannerProps = {
 export function HeroParticleScanner({ content, isCompact }: HeroParticleScannerProps) {
   const reducedMotion = Boolean(useReducedMotion());
   const webGLAvailable = useMemo(getWebGLAvailability, []);
-  const count = reducedMotion ? 1500 : isCompact ? 2600 : 5600;
-  const sceneClassName = webGLAvailable ? 'hero__scene' : 'hero__scene hero__scene--static';
+  const count = getEarthParticleCount(isCompact, reducedMotion);
 
   return (
     <section className="hero" aria-labelledby="hero-title">
-      <div className={sceneClassName} aria-hidden="true">
-        {webGLAvailable ? (
-          <ParticleErrorBoundary fallback={<HeroCanvasFallback />}>
-            <Canvas
-              camera={{ position: [0, 0, isCompact ? 5.2 : 4.2], fov: isCompact ? 52 : 46 }}
-              dpr={isCompact ? [1, 1.25] : [1, 1.7]}
-              fallback={<HeroCanvasFallback />}
-              gl={{ antialias: false, powerPreference: 'high-performance', alpha: true }}
-              frameloop={reducedMotion ? 'demand' : 'always'}
-            >
-              <color attach="background" args={['#050607']} />
-              <fog attach="fog" args={['#050607', 4.2, 7.5]} />
-              <ScannerPoints count={count} reducedMotion={reducedMotion} />
-              <HologramFrame reducedMotion={reducedMotion} />
-            </Canvas>
-          </ParticleErrorBoundary>
-        ) : (
-          <HeroCanvasFallback />
-        )}
-        <div className="hero__mesh" />
-        <div className="hero__scanner-line" />
-        <div className="hero__noise" />
-        <div className="hero__telemetry hero__telemetry--left">
-          <span>{content.telemetryLeft.label}</span>
-          <strong>{content.telemetryLeft.value}</strong>
-        </div>
-        <div className="hero__telemetry hero__telemetry--right">
-          <span>{content.telemetryRight.label}</span>
-          <strong>{content.telemetryRight.value}</strong>
-        </div>
+      <div className="hero__layout">
+        <motion.div
+          className="hero__copy"
+          initial={reducedMotion ? false : { opacity: 0, y: 24, filter: 'blur(12px)' }}
+          animate={reducedMotion ? undefined : { opacity: 1, y: 0, filter: 'blur(0px)' }}
+          transition={{ duration: 0.86, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <p className="hero__kicker">{content.kicker}</p>
+          <HeroBrandTitle title={content.title} reducedMotion={reducedMotion} />
+          <p className="hero__subtitle">{content.subtitle}</p>
+          <div className="hero__actions" aria-label={content.actionsLabel}>
+            <a className="button button--primary" href="#projects">
+              {content.primaryCta} <ArrowDownRight size={18} aria-hidden="true" />
+            </a>
+            <a className="button button--ghost" href="#lab">
+              {content.secondaryCta} <FlaskConical size={18} aria-hidden="true" />
+            </a>
+          </div>
+        </motion.div>
+
+        <motion.div
+          className="hero__visual"
+          initial={reducedMotion ? false : { opacity: 0, scale: 0.96, filter: 'blur(14px)' }}
+          animate={reducedMotion ? undefined : { opacity: 1, scale: 1, filter: 'blur(0px)' }}
+          transition={{ duration: 1, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <div className={webGLAvailable ? 'particle-earth-shell' : 'particle-earth-shell particle-earth-shell--static'}>
+            {webGLAvailable ? (
+              <ParticleErrorBoundary fallback={<HeroCanvasFallback />}>
+                <Canvas
+                  camera={{ position: [0, 0, isCompact ? 5.2 : 4.6], fov: isCompact ? 45 : 39 }}
+                  dpr={isCompact ? [1, 1.15] : [1, 1.55]}
+                  fallback={<HeroCanvasFallback />}
+                  gl={{ antialias: false, alpha: true, powerPreference: 'high-performance' }}
+                  frameloop={reducedMotion ? 'demand' : 'always'}
+                >
+                  <ParticleEarth count={count} reducedMotion={reducedMotion} />
+                </Canvas>
+              </ParticleErrorBoundary>
+            ) : (
+              <HeroCanvasFallback />
+            )}
+            <div className="particle-earth-shell__scan" />
+            <div className="particle-earth-shell__axis" />
+          </div>
+        </motion.div>
       </div>
 
       <motion.div
-        className="hero__content"
-        initial={reducedMotion ? false : { opacity: 0, y: 24 }}
+        className="hero__stats"
+        initial={reducedMotion ? false : { opacity: 0, y: 18 }}
         animate={reducedMotion ? undefined : { opacity: 1, y: 0 }}
-        transition={{ duration: 0.9, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 0.76, delay: 0.65, ease: [0.22, 1, 0.36, 1] }}
       >
-        <p className="hero__kicker">{content.kicker}</p>
-        <h1 id="hero-title">{content.title}</h1>
-        <p className="hero__subtitle">{content.subtitle}</p>
-        <div className="hero__actions" aria-label={content.actionsLabel}>
-          <a className="button button--primary" href="#projects">
-            {content.primaryCta} <ArrowDownRight size={18} aria-hidden="true" />
-          </a>
-          <a className="button button--ghost" href="#lab">
-            {content.secondaryCta} <FlaskConical size={18} aria-hidden="true" />
-          </a>
-        </div>
+        {content.stats.map((stat) => (
+          <div className={`hero-stat hero-stat--${stat.tone}`} key={`${stat.label}-${stat.value}`}>
+            <span>{stat.label}</span>
+            <strong>{stat.value}</strong>
+          </div>
+        ))}
       </motion.div>
     </section>
   );

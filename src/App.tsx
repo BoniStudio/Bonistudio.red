@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Contact } from './components/Contact';
 import { Footer } from './components/Footer';
+import { GlobalParticleField } from './components/GlobalParticleField';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
 import { InteractiveLab } from './components/InteractiveLab';
@@ -62,6 +63,7 @@ function App() {
 
   return (
     <>
+      <GlobalParticleField isCompact={isCompact} />
       <Header content={siteContent.nav} language={language} onLanguageChange={setLanguage} />
 
       <main id="top">
@@ -78,6 +80,7 @@ function App() {
             eyebrow={siteContent.lab.eyebrow}
             title={siteContent.lab.title}
             copy={siteContent.lab.copy}
+            accent="purple"
           />
           <InteractiveLab
             archiveItems={siteContent.lab.archiveItems}
@@ -90,6 +93,7 @@ function App() {
           <SectionTitle
             eyebrow={siteContent.timeline.eyebrow}
             title={siteContent.timeline.title}
+            accent="amber"
           />
           <Timeline items={siteContent.timeline.items} />
         </section>

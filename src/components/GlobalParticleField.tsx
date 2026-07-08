@@ -35,13 +35,13 @@ const fieldFragmentShader = `
     vec2 point = gl_PointCoord - vec2(0.5);
     float distanceToCenter = length(point);
     float alpha = smoothstep(0.5, 0.08, distanceToCenter) * vAlpha;
-    vec3 white = vec3(0.86, 0.9, 0.9);
-    vec3 cyan = vec3(0.0, 0.9, 1.0);
-    vec3 lime = vec3(0.7, 1.0, 0.38);
-    vec3 purple = vec3(0.66, 0.33, 0.97);
-    vec3 accent = mix(cyan, lime, smoothstep(0.2, 0.58, vTone));
-    accent = mix(accent, purple, smoothstep(0.72, 1.0, vTone) * 0.55);
-    vec3 color = mix(white, accent, 0.34);
+    vec3 white = vec3(0.82, 0.92, 1.0);
+    vec3 cyan = vec3(0.41, 0.91, 1.0);
+    vec3 blue = vec3(0.30, 0.55, 1.0);
+    vec3 violet = vec3(0.56, 0.42, 1.0);
+    vec3 accent = mix(cyan, blue, smoothstep(0.22, 0.68, vTone));
+    accent = mix(accent, violet, smoothstep(0.78, 1.0, vTone) * 0.32);
+    vec3 color = mix(white, accent, 0.24);
     gl_FragColor = vec4(color, alpha);
   }
 `;

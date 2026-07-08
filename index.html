@@ -15,247 +15,360 @@
     />
     <title>BoniStudio | AI-native products, games, and interactive worlds</title>
     <style>
+      :root {
+        color-scheme: dark;
+        --fallback-bg: #030608;
+        --fallback-panel: rgba(9, 13, 18, 0.72);
+        --fallback-line: rgba(210, 236, 255, 0.13);
+        --fallback-text: #eaf7ff;
+        --fallback-muted: rgba(220, 240, 255, 0.62);
+        --fallback-faint: rgba(220, 240, 255, 0.38);
+        --fallback-cyan: #68e8ff;
+        --fallback-blue: #4c8dff;
+        --fallback-violet: #8f6bff;
+        --fallback-display:
+          "Share Tech", "IBM Plex Sans", "Inter", "Helvetica Neue", Arial, sans-serif;
+        --fallback-body:
+          "IBM Plex Sans", "Inter", "Helvetica Neue", Arial, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
       html {
-        background: #050607;
+        background: var(--fallback-bg);
       }
 
       body {
         min-width: 320px;
         margin: 0;
-        color: #eff7f5;
+        color: var(--fallback-text);
         background:
-          linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px) 0 0 / 96px 96px,
-          linear-gradient(0deg, rgba(255, 255, 255, 0.026) 1px, transparent 1px) 0 0 / 96px 96px,
-          #050607;
-        font-family:
-          "Share Tech", "Noto Sans SC", "IBM Plex Sans", "Helvetica Neue", Arial, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+          radial-gradient(circle at 75% 28%, rgba(104, 232, 255, 0.12), transparent 30%),
+          radial-gradient(circle at 18% 70%, rgba(76, 141, 255, 0.08), transparent 30%),
+          linear-gradient(90deg, rgba(210, 236, 255, 0.026) 1px, transparent 1px) 0 0 / 92px 92px,
+          linear-gradient(0deg, rgba(210, 236, 255, 0.02) 1px, transparent 1px) 0 0 / 92px 92px,
+          var(--fallback-bg);
+        font-family: var(--fallback-body);
+        overflow-x: hidden;
       }
 
-      .app-fallback {
-        display: grid;
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      #root {
         min-height: 100svh;
-        padding: 34px clamp(18px, 4vw, 64px);
-        place-items: center;
-        text-align: center;
-        background:
-          radial-gradient(circle at 50% 45%, rgba(102, 249, 255, 0.16), transparent 35%),
-          linear-gradient(180deg, rgba(5, 6, 7, 0.3), rgba(5, 6, 7, 0.96) 92%);
+        animation: shell-in 820ms ease-out both;
       }
 
-      .app-fallback h1 {
-        margin: 0;
-        font-size: clamp(4.4rem, 13vw, 10.8rem);
-        font-family:
-          "Share Tech", "Noto Sans SC", "IBM Plex Sans", "Helvetica Neue", Arial, system-ui, sans-serif;
-        font-weight: 400;
-        letter-spacing: 0;
-        line-height: 0.86;
-        text-transform: uppercase;
-        background: linear-gradient(180deg, #ffffff 0%, #d7fffb 34%, #7bf8ff 54%, #eff7f5 78%);
-        background-clip: text;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        text-shadow:
-          0 0 1px rgba(255, 255, 255, 0.7),
-          0 0 18px rgba(102, 249, 255, 0.26),
-          0 0 64px rgba(102, 249, 255, 0.16);
-      }
-
-      .app-fallback p {
-        max-width: 760px;
-        margin: 28px auto 0;
-        color: rgba(239, 247, 245, 0.82);
-        font-size: clamp(1.05rem, 2.4vw, 1.7rem);
-        line-height: 1.35;
-      }
-
-      .app-static {
+      .static-site {
         min-height: 100svh;
-        padding: 24px clamp(18px, 5vw, 72px) 42px;
-        background:
-          radial-gradient(circle at 78% 22%, rgba(0, 229, 255, 0.12), transparent 30%),
-          radial-gradient(circle at 16% 72%, rgba(168, 85, 247, 0.1), transparent 28%),
-          linear-gradient(90deg, rgba(255, 255, 255, 0.026) 1px, transparent 1px) 0 0 / 86px 86px,
-          linear-gradient(0deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px) 0 0 / 86px 86px,
-          #050608;
+        padding: 24px clamp(18px, 5vw, 72px) 40px;
+        position: relative;
+        isolation: isolate;
       }
 
-      .app-static__header,
-      .app-static__footer {
+      .static-site::before,
+      .static-site::after {
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        content: "";
+      }
+
+      .static-site::before {
+        background:
+          radial-gradient(circle at 72% 36%, rgba(104, 232, 255, 0.12), transparent 24%),
+          radial-gradient(circle at 70% 36%, rgba(143, 107, 255, 0.08), transparent 34%);
+        filter: blur(2px);
+      }
+
+      .static-site::after {
+        opacity: 0.1;
+        background:
+          repeating-linear-gradient(0deg, rgba(234, 247, 255, 0.16) 0 1px, transparent 1px 5px),
+          radial-gradient(circle, rgba(234, 247, 255, 0.14) 0 1px, transparent 1px) 0 0 / 18px 18px;
+        mix-blend-mode: screen;
+      }
+
+      .static-header,
+      .static-section,
+      .static-footer {
+        width: min(1180px, 100%);
+        margin: 0 auto;
+      }
+
+      .static-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 18px;
-        max-width: 1180px;
-        margin: 0 auto;
+        border: 1px solid var(--fallback-line);
+        border-radius: 999px;
+        padding: 10px 14px 10px 18px;
+        background: rgba(3, 6, 8, 0.72);
+        backdrop-filter: blur(18px);
       }
 
-      .app-static__brand {
-        color: #f6fbfa;
-        font-family: "Share Tech", "Noto Sans SC", system-ui, sans-serif;
-        font-size: 1.1rem;
-      }
-
-      .app-static__brand span:first-child {
-        color: #00e5ff;
-      }
-
-      .app-static__brand span:last-child {
-        color: #a855f7;
-      }
-
-      .app-static__nav {
+      .static-brand {
         display: flex;
-        flex-wrap: wrap;
-        gap: 16px;
-        color: rgba(246, 251, 250, 0.68);
-        font-size: 0.88rem;
+        flex-direction: column;
+        gap: 2px;
+        color: var(--fallback-text);
+        font-family: var(--fallback-display);
+        font-size: 1.02rem;
       }
 
-      .app-static__hero {
-        display: grid;
-        max-width: 1180px;
-        min-height: 62svh;
-        align-content: center;
-        margin: 0 auto;
-        padding: clamp(72px, 12vw, 140px) 0 52px;
+      .static-brand strong {
+        font-weight: 400;
       }
 
-      .app-static__hero p:first-child {
-        margin: 0;
-        color: #00e5ff;
-        font-family: "SFMono-Regular", Consolas, monospace;
-        font-size: 0.76rem;
+      .static-brand strong span {
+        color: var(--fallback-cyan);
+        text-shadow: 0 0 18px rgba(104, 232, 255, 0.24);
+      }
+
+      .static-brand small {
+        color: var(--fallback-faint);
+        font-family: var(--fallback-body);
+        font-size: 0.62rem;
         text-transform: uppercase;
       }
 
-      .app-static__hero h1 {
-        max-width: 900px;
-        margin: 18px 0 0;
-        color: #f6fbfa;
-        font-family: "Share Tech", "Noto Sans SC", system-ui, sans-serif;
-        font-size: clamp(4rem, 13vw, 9rem);
-        font-weight: 400;
-        line-height: 0.88;
+      .static-nav {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: clamp(10px, 1.8vw, 22px);
+        color: var(--fallback-muted);
+        font-family: var(--fallback-display);
+        font-size: 0.86rem;
       }
 
-      .app-static__hero h1 span:first-child {
-        color: #00e5ff;
-      }
-
-      .app-static__hero h1 span:last-child {
-        color: #a855f7;
-      }
-
-      .app-static__hero p:last-child {
-        max-width: 700px;
-        margin: 26px 0 0;
-        color: rgba(246, 251, 250, 0.76);
-        font-size: clamp(1.05rem, 2vw, 1.45rem);
-        line-height: 1.45;
-      }
-
-      .app-static__grid {
+      .static-hero {
         display: grid;
-        max-width: 1180px;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 10px;
-        margin: 0 auto 54px;
+        min-height: 68svh;
+        grid-template-columns: minmax(0, 0.95fr) minmax(320px, 0.72fr);
+        align-items: center;
+        gap: clamp(28px, 5vw, 72px);
+        padding: clamp(82px, 12vw, 150px) 0 clamp(58px, 8vw, 92px);
       }
 
-      .app-static__grid article {
-        border: 1px solid rgba(246, 251, 250, 0.12);
+      .static-kicker,
+      .static-label {
+        margin: 0;
+        color: var(--fallback-cyan);
+        font-family: var(--fallback-display);
+        font-size: 0.82rem;
+        text-transform: uppercase;
+      }
+
+      .static-hero h1 {
+        margin: 16px 0 0;
+        color: var(--fallback-text);
+        font-family: var(--fallback-display);
+        font-size: clamp(4rem, 11vw, 8.4rem);
+        font-weight: 400;
+        line-height: 0.86;
+      }
+
+      .static-hero h1 span {
+        color: var(--fallback-cyan);
+      }
+
+      .static-hero p:last-child {
+        max-width: 650px;
+        margin: 24px 0 0;
+        color: var(--fallback-muted);
+        font-size: clamp(1.05rem, 2vw, 1.42rem);
+        line-height: 1.5;
+      }
+
+      .static-globe {
+        position: relative;
+        width: min(430px, 100%);
+        aspect-ratio: 1;
+        justify-self: center;
+        border-radius: 50%;
+        background:
+          radial-gradient(circle, rgba(234, 247, 255, 0.18) 0 1px, transparent 1.5px) 0 0 / 18px 18px,
+          radial-gradient(circle, rgba(104, 232, 255, 0.16), transparent 62%);
+        mask-image: radial-gradient(circle, #000 0 61%, transparent 62%);
+        opacity: 0.95;
+        filter: drop-shadow(0 0 42px rgba(104, 232, 255, 0.12));
+      }
+
+      .static-globe::before,
+      .static-globe::after {
+        position: absolute;
+        inset: 9%;
+        border: 1px solid rgba(210, 236, 255, 0.13);
+        border-radius: 50%;
+        content: "";
+      }
+
+      .static-globe::before {
+        transform: rotate(-18deg) scaleX(0.58);
+      }
+
+      .static-globe::after {
+        transform: rotate(18deg) scaleY(0.58);
+      }
+
+      .static-section {
+        border-top: 1px solid rgba(210, 236, 255, 0.12);
+        padding: 56px 0;
+      }
+
+      .static-section h2 {
+        margin: 0;
+        color: var(--fallback-text);
+        font-family: var(--fallback-display);
+        font-size: clamp(2rem, 5vw, 4rem);
+        font-weight: 400;
+        line-height: 1;
+      }
+
+      .static-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 28px;
+      }
+
+      .static-card {
+        min-height: 150px;
+        border: 1px solid var(--fallback-line);
         border-radius: 8px;
         padding: 18px;
-        background: rgba(8, 10, 13, 0.78);
+        background: var(--fallback-panel);
+        backdrop-filter: blur(14px);
       }
 
-      .app-static__grid h2 {
-        margin: 0;
-        color: #f6fbfa;
-        font-family: "Share Tech", "Noto Sans SC", system-ui, sans-serif;
-        font-size: 1.45rem;
+      .static-card strong {
+        display: block;
+        color: var(--fallback-text);
+        font-family: var(--fallback-display);
+        font-size: 1.2rem;
         font-weight: 400;
       }
 
-      .app-static__grid p {
-        margin: 12px 0 0;
-        color: rgba(246, 251, 250, 0.64);
+      .static-card span {
+        display: block;
+        margin-top: 12px;
+        color: var(--fallback-muted);
         line-height: 1.55;
       }
 
-      .app-static__footer {
-        border-top: 1px solid rgba(246, 251, 250, 0.12);
-        padding-top: 18px;
-        color: rgba(246, 251, 250, 0.56);
+      .static-pipeline {
+        color: var(--fallback-muted);
+        font-family: var(--fallback-display);
+        font-size: clamp(1.2rem, 3vw, 2.2rem);
       }
 
-      @media (max-width: 760px) {
-        .app-static__header,
-        .app-static__footer {
+      .static-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        border-top: 1px solid rgba(210, 236, 255, 0.12);
+        padding-top: 20px;
+        color: var(--fallback-faint);
+      }
+
+      @keyframes shell-in {
+        from {
+          opacity: 0;
+          filter: blur(10px);
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          filter: blur(0);
+          transform: translateY(0);
+        }
+      }
+
+      @media (max-width: 840px) {
+        .static-header,
+        .static-footer {
           align-items: flex-start;
           flex-direction: column;
+          border-radius: 18px;
         }
 
-        .app-static__grid {
+        .static-hero,
+        .static-grid {
           grid-template-columns: 1fr;
+        }
+
+        .static-globe {
+          order: -1;
+          width: min(310px, 86vw);
+        }
+
+        .static-nav {
+          justify-content: flex-start;
         }
       }
     </style>
   </head>
   <body>
     <div id="root">
-      <main class="app-fallback" aria-labelledby="fallback-title">
-        <div>
-          <h1 id="fallback-title">BoniStudio</h1>
-          <p>Loading the AI-native studio interface.</p>
-        </div>
+      <main class="static-site" aria-labelledby="static-title">
+        <header class="static-header">
+          <a class="static-brand" href="#top" aria-label="BoniStudio home">
+            <strong><span>B</span>oniStudio</strong>
+            <small>AI-native studio</small>
+          </a>
+          <nav class="static-nav" aria-label="Primary navigation">
+            <a href="#static-build">Build</a>
+            <a href="#static-projects">Projects</a>
+            <a href="#static-pipeline">Pipeline</a>
+            <a href="#static-contact">Contact</a>
+          </nav>
+        </header>
+
+        <section class="static-hero" id="top">
+          <div>
+            <p class="static-kicker">Holographic archive / live studio</p>
+            <h1 id="static-title"><span>B</span>oniStudio</h1>
+            <p>AI-native products, games, and interactive worlds.</p>
+          </div>
+          <div class="static-globe" aria-hidden="true"></div>
+        </section>
+
+        <section class="static-section" id="static-build">
+          <p class="static-label">What We Build</p>
+          <h2>Products, games, and spatial interfaces.</h2>
+          <div class="static-grid">
+            <article class="static-card"><strong>AI Products</strong><span>Useful workflows shaped by taste, models, and real users.</span></article>
+            <article class="static-card"><strong>Mobile Apps</strong><span>Focused tools with clear loops and tactile polish.</span></article>
+            <article class="static-card"><strong>Games</strong><span>Systems, prototypes, and expressive digital objects.</span></article>
+            <article class="static-card"><strong>Interactive Worlds</strong><span>Spatial archives, VR concepts, and living interfaces.</span></article>
+          </div>
+        </section>
+
+        <section class="static-section" id="static-projects">
+          <p class="static-label">Projects</p>
+          <h2>OvO Cyber Beads / AtMyTable / Space Station / BoniStudio Website</h2>
+        </section>
+
+        <section class="static-section" id="static-pipeline">
+          <p class="static-label">AI Pipeline</p>
+          <div class="static-pipeline">Idea -> GPT -> Claude -> Codex -> Build -> Deploy -> Users</div>
+        </section>
+
+        <footer class="static-footer" id="static-contact">
+          <span>Building the future, one product at a time.</span>
+          <a href="mailto:bonistudio.core@gmail.com">bonistudio.core@gmail.com</a>
+        </footer>
       </main>
     </div>
     <script type="module" src="/src/main.tsx"></script>
-    <script>
-      window.setTimeout(function () {
-        if (document.querySelector('.site-header')) {
-          return;
-        }
-
-        var root = document.getElementById('root');
-        if (!root) {
-          return;
-        }
-
-        root.innerHTML = [
-          '<main class="app-static" aria-labelledby="static-title">',
-          '<header class="app-static__header">',
-          '<div class="app-static__brand"><span>B</span>oni<span>S</span>tudio</div>',
-          '<nav class="app-static__nav" aria-label="Fallback navigation">',
-          '<a href="#static-projects">Projects</a>',
-          '<a href="#static-pipeline">Pipeline</a>',
-          '<a href="mailto:bonistudio.core@gmail.com">Contact</a>',
-          '</nav>',
-          '</header>',
-          '<section class="app-static__hero">',
-          '<p>AI-native studio / fallback interface</p>',
-          '<h1 id="static-title"><span>B</span>oni<span>S</span>tudio</h1>',
-          '<p>AI-native products, games, and interactive worlds. The core site is loading a lighter static interface because the app bundle did not start.</p>',
-          '</section>',
-          '<section class="app-static__grid" id="static-projects">',
-          '<article><h2>AI Products</h2><p>Tools and workflows shaped around real product behavior.</p></article>',
-          '<article><h2>Mobile Apps</h2><p>Focused app experiments with clear loops and tactile polish.</p></article>',
-          '<article><h2>Games</h2><p>Play systems, prototypes, and expressive digital toys.</p></article>',
-          '<article><h2>Interactive Worlds</h2><p>Spatial interfaces, VR concepts, and living archives.</p></article>',
-          '</section>',
-          '<section class="app-static__grid" id="static-pipeline">',
-          '<article><h2>Pipeline</h2><p>Idea -> GPT -> Claude -> Codex -> Build -> Deploy -> Users.</p></article>',
-          '<article><h2>Projects</h2><p>OvO Cyber Beads, AtMyTable, Space Station / VR Game, HC Pet Fashion, and BoniStudio Website.</p></article>',
-          '</section>',
-          '<footer class="app-static__footer">',
-          '<span>Building the future, one product at a time.</span>',
-          '<a href="mailto:bonistudio.core@gmail.com">bonistudio.core@gmail.com</a>',
-          '</footer>',
-          '</main>',
-        ].join('');
-      }, 1200);
-    </script>
   </body>
 </html>

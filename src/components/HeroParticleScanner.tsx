@@ -59,17 +59,15 @@ const earthFragmentShader = `
     float d = length(point);
     float softDot = smoothstep(0.5, 0.08, d);
     float core = smoothstep(0.26, 0.0, d);
-    vec3 white = vec3(0.9, 0.96, 0.95);
-    vec3 graphite = vec3(0.34, 0.39, 0.4);
-    vec3 cyan = vec3(0.0, 0.9, 1.0);
-    vec3 lime = vec3(0.71, 1.0, 0.36);
-    vec3 purple = vec3(0.66, 0.33, 0.97);
-    vec3 amber = vec3(0.96, 0.62, 0.08);
-    vec3 accent = mix(cyan, lime, smoothstep(0.18, 0.48, vTone));
-    accent = mix(accent, purple, smoothstep(0.52, 0.78, vTone) * 0.7);
-    accent = mix(accent, amber, smoothstep(0.84, 1.0, vTone) * 0.55);
-    vec3 base = mix(graphite, white, 0.42 + vSignal * 0.42);
-    vec3 color = mix(base, accent, 0.2 + vSignal * 0.28 + vDetach * 0.12);
+    vec3 white = vec3(0.86, 0.96, 1.0);
+    vec3 graphite = vec3(0.24, 0.31, 0.36);
+    vec3 cyan = vec3(0.41, 0.91, 1.0);
+    vec3 blue = vec3(0.30, 0.55, 1.0);
+    vec3 violet = vec3(0.56, 0.42, 1.0);
+    vec3 accent = mix(cyan, blue, smoothstep(0.22, 0.62, vTone));
+    accent = mix(accent, violet, smoothstep(0.72, 1.0, vTone) * 0.5);
+    vec3 base = mix(graphite, white, 0.48 + vSignal * 0.36);
+    vec3 color = mix(base, accent, 0.14 + vSignal * 0.2 + vDetach * 0.08);
     float alpha = softDot * vAlpha + core * 0.16;
     gl_FragColor = vec4(color, alpha);
   }
@@ -193,7 +191,7 @@ function getEarthParticleCount(isCompact: boolean, reducedMotion: boolean) {
   }
 
   if (isCompact) {
-    return 42000;
+    return 32000;
   }
 
   if (typeof navigator === 'undefined') {
@@ -204,10 +202,10 @@ function getEarthParticleCount(isCompact: boolean, reducedMotion: boolean) {
   const memory = 'deviceMemory' in navigator ? Number(navigator.deviceMemory) : 8;
 
   if (cores <= 4 || memory <= 4) {
-    return 86000;
+    return 68000;
   }
 
-  return 180000;
+  return 120000;
 }
 
 function createConnectionGeometry(segmentCount: number) {
@@ -239,6 +237,85 @@ function createConnectionGeometry(segmentCount: number) {
   return geometry;
 }
 
+function createGuideGeometry() {
+  const positions: number[] = [];
+  const radius = 1.445;
+  const segmentCount = 96;
+  const latitudes = [-0.78, -0.42, 0, 0.42, 0.78];
+
+  latitudes.forEach((latitude) => {
+    const y = Math.sin(latitude) * radius;
+    const ringRadius = Math.cos(latitude) * radius;
+
+    for (let i = 0; i < segmentCount; i += 1) {
+      const a = (i / segmentCount) * Math.PI * 2;
+      const b = ((i + 1) / segmentCount) * Math.PI * 2;
+      positions.push(
+        Math.cos(a) * ringRadius,
+        y,
+        Math.sin(a) * ringRadius,
+        Math.cos(b) * ringRadius,
+        y,
+        Math.sin(b) * ringRadius,
+      );
+    }
+  });
+
+  for (let meridian = 0; meridian < 7; meridian += 1) {
+    const rotation = (meridian / 7) * Math.PI;
+    const cos = Math.cos(rotation);
+    const sin = Math.sin(rotation);
+
+    for (let i = 0; i < segmentCount; i += 1) {
+      const a = (i / segmentCount) * Math.PI * 2;
+      const b = ((i + 1) / segmentCount) * Math.PI * 2;
+      const ax = Math.cos(a) * radius;
+      const ay = Math.sin(a) * radius;
+      const bx = Math.cos(b) * radius;
+      const by = Math.sin(b) * radius;
+      positions.push(
+        ax * cos,
+        ay,
+        ax * sin,
+        bx * cos,
+        by,
+        bx * sin,
+      );
+    }
+  }
+
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  return geometry;
+}
+
+function createOrbitGeometry() {
+  const positions: number[] = [];
+  const segmentCount = 160;
+  const radius = 1.86;
+  const tilts = [
+    { x: 0.28, z: -0.18 },
+    { x: -0.16, z: 0.52 },
+    { x: 0.06, z: 1.02 },
+  ];
+
+  tilts.forEach((tilt) => {
+    const matrix = new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(tilt.x, 0, tilt.z));
+
+    for (let i = 0; i < segmentCount; i += 1) {
+      const a = (i / segmentCount) * Math.PI * 2;
+      const b = ((i + 1) / segmentCount) * Math.PI * 2;
+      const pointA = new THREE.Vector3(Math.cos(a) * radius, 0, Math.sin(a) * radius * 0.72).applyMatrix4(matrix);
+      const pointB = new THREE.Vector3(Math.cos(b) * radius, 0, Math.sin(b) * radius * 0.72).applyMatrix4(matrix);
+      positions.push(pointA.x, pointA.y, pointA.z, pointB.x, pointB.y, pointB.z);
+    }
+  });
+
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  return geometry;
+}
+
 function HeroCanvasFallback() {
   return (
     <div className="particle-earth-fallback" aria-hidden="true">
@@ -255,6 +332,8 @@ function ParticleEarth({ count, reducedMotion }: { count: number; reducedMotion:
   const mouse = useRef(new THREE.Vector2());
   const particleData = useMemo(() => createEarthParticleData(count), [count]);
   const lineGeometry = useMemo(() => createConnectionGeometry(count > 100000 ? 150 : 82), [count]);
+  const guideGeometry = useMemo(createGuideGeometry, []);
+  const orbitGeometry = useMemo(createOrbitGeometry, []);
   const uniforms = useMemo(
     () => ({
       uTime: { value: 0 },
@@ -279,8 +358,14 @@ function ParticleEarth({ count, reducedMotion }: { count: number; reducedMotion:
 
   return (
     <group ref={groupRef}>
+      <lineSegments geometry={orbitGeometry}>
+        <lineBasicMaterial color="#6fb9ff" transparent opacity={0.08} blending={THREE.AdditiveBlending} />
+      </lineSegments>
+      <lineSegments geometry={guideGeometry}>
+        <lineBasicMaterial color="#b7eaff" transparent opacity={0.1} blending={THREE.AdditiveBlending} />
+      </lineSegments>
       <lineSegments geometry={lineGeometry}>
-        <lineBasicMaterial color="#8beeff" transparent opacity={0.16} blending={THREE.AdditiveBlending} />
+        <lineBasicMaterial color="#8fdfff" transparent opacity={0.13} blending={THREE.AdditiveBlending} />
       </lineSegments>
       <points frustumCulled={false}>
         <bufferGeometry>
@@ -315,7 +400,6 @@ function HeroBrandTitle({ title, reducedMotion }: { title: string; reducedMotion
         const className = [
           'hero-title__letter',
           letter === 'B' ? 'hero-title__letter--b' : '',
-          letter === 'S' ? 'hero-title__letter--s' : '',
         ].filter(Boolean).join(' ');
 
         return (
@@ -391,6 +475,9 @@ export function HeroParticleScanner({ content, isCompact }: HeroParticleScannerP
             )}
             <div className="particle-earth-shell__scan" />
             <div className="particle-earth-shell__axis" />
+            <div className="particle-earth-shell__stream particle-earth-shell__stream--one" />
+            <div className="particle-earth-shell__stream particle-earth-shell__stream--two" />
+            <div className="particle-earth-shell__stream particle-earth-shell__stream--three" />
           </div>
         </motion.div>
       </div>

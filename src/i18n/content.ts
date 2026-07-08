@@ -148,7 +148,7 @@ export const content: Record<Language, SiteContent> = {
       ],
     },
     hero: {
-      kicker: 'BoniStudio / interactive archive 001',
+      kicker: 'AI-native studio / spatial archive',
       title: 'BoniStudio',
       subtitle: 'AI-native products, games, and interactive worlds.',
       actionsLabel: 'Primary actions',
@@ -163,11 +163,9 @@ export const content: Record<Language, SiteContent> = {
         value: 'AI-native studio',
       },
       stats: [
-        { label: 'Projects', value: '6', tone: 'cyan' },
-        { label: 'Build Tracks', value: '4', tone: 'lime' },
-        { label: 'Pipeline', value: '7 steps', tone: 'purple' },
-        { label: 'Founded', value: '2026', tone: 'amber' },
-        { label: 'GitHub', value: 'BoniStudio', tone: 'white' },
+        { label: 'Studio', value: 'AI-native studio', tone: 'cyan' },
+        { label: 'Base', value: 'Seattle x Global', tone: 'white' },
+        { label: 'Surface', value: 'Products / Games / Worlds', tone: 'purple' },
       ],
     },
     build: {
@@ -335,7 +333,7 @@ export const content: Record<Language, SiteContent> = {
       ],
     },
     hero: {
-      kicker: 'BoniStudio / 互动档案 001',
+      kicker: 'AI 原生工作室 / 空间档案',
       title: 'BoniStudio',
       subtitle: 'AI 原生产品、游戏与互动世界。',
       actionsLabel: '主要操作',
@@ -350,11 +348,9 @@ export const content: Record<Language, SiteContent> = {
         value: 'AI 原生工作室',
       },
       stats: [
-        { label: '项目', value: '6', tone: 'cyan' },
-        { label: '构建方向', value: '4', tone: 'lime' },
-        { label: '生产流程', value: '7 步', tone: 'purple' },
-        { label: '成立时间', value: '2026', tone: 'amber' },
-        { label: 'GitHub', value: 'BoniStudio', tone: 'white' },
+        { label: '工作室', value: 'AI 原生工作室', tone: 'cyan' },
+        { label: '坐标', value: 'Seattle x Global', tone: 'white' },
+        { label: '方向', value: '产品 / 游戏 / 互动世界', tone: 'purple' },
       ],
     },
     build: {

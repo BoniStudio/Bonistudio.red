@@ -1,7 +1,9 @@
 import { ArrowDownRight, FlaskConical } from 'lucide-react';
 import { motion, useReducedMotion } from 'framer-motion';
 import type { SiteContent } from '../i18n/content';
-import { ParticleGlobe } from './ParticleGlobe';
+import { AnomalousMatterOrb } from './AnomalousMatterOrb';
+import { GlassButton } from './GlassButton';
+import { WebGLFluidBackground } from './WebGLFluidBackground';
 
 function HeroBrandTitle({ title, reducedMotion }: { title: string; reducedMotion: boolean }) {
   return (
@@ -39,6 +41,11 @@ export function HeroParticleScanner({ content, isCompact }: HeroParticleScannerP
 
   return (
     <section className="hero" id="home" aria-labelledby="hero-title">
+      <div className="hero__background" aria-hidden="true">
+        <div className="hero__base-field" />
+        <WebGLFluidBackground isCompact={isCompact} reducedMotion={reducedMotion} />
+      </div>
+
       <div className="hero__layout">
         <motion.div
           className="hero__copy"
@@ -50,12 +57,12 @@ export function HeroParticleScanner({ content, isCompact }: HeroParticleScannerP
           <HeroBrandTitle title={content.title} reducedMotion={reducedMotion} />
           <p className="hero__subtitle">{content.subtitle}</p>
           <div className="hero__actions" aria-label={content.actionsLabel}>
-            <a className="button button--primary" href="#projects">
+            <GlassButton variant="primary" href="#projects">
               {content.primaryCta} <ArrowDownRight size={18} aria-hidden="true" />
-            </a>
-            <a className="button button--ghost" href="#lab">
+            </GlassButton>
+            <GlassButton href="#lab">
               {content.secondaryCta} <FlaskConical size={18} aria-hidden="true" />
-            </a>
+            </GlassButton>
           </div>
         </motion.div>
 
@@ -65,13 +72,12 @@ export function HeroParticleScanner({ content, isCompact }: HeroParticleScannerP
           animate={reducedMotion ? undefined : { opacity: 1, scale: 1, filter: 'blur(0px)' }}
           transition={{ duration: 1, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
         >
-          <div className="particle-earth-shell">
-            <ParticleGlobe isCompact={isCompact} reducedMotion={reducedMotion} />
-            <div className="particle-earth-shell__scan" />
-            <div className="particle-earth-shell__axis" />
-            <div className="particle-earth-shell__stream particle-earth-shell__stream--one" />
-            <div className="particle-earth-shell__stream particle-earth-shell__stream--two" />
-            <div className="particle-earth-shell__stream particle-earth-shell__stream--three" />
+          <div className="hero-orb-shell">
+            <AnomalousMatterOrb isCompact={isCompact} reducedMotion={reducedMotion} />
+            <div className="hero-orb-shell__aura" />
+            <div className="hero-orb-shell__scan" />
+            <div className="hero-orb-shell__plane hero-orb-shell__plane--one" />
+            <div className="hero-orb-shell__plane hero-orb-shell__plane--two" />
           </div>
         </motion.div>
       </div>

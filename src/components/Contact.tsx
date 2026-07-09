@@ -1,6 +1,7 @@
 import { Github, Mail, Radio } from 'lucide-react';
 import type { SiteContent } from '../i18n/content';
 import { AccentTitle } from './AccentTitle';
+import { GlassButton } from './GlassButton';
 
 type ContactProps = {
   content: SiteContent['contact'];
@@ -14,18 +15,18 @@ export function Contact({ content }: ContactProps) {
         <AccentTitle text={content.title} accent="cyan" />
       </div>
       <div className="contact-panel__links">
-        <a href="mailto:bonistudio.core@gmail.com" aria-label={content.emailLabel}>
+        <GlassButton href="mailto:bonistudio.core@gmail.com" aria-label={content.emailLabel}>
           <Mail size={18} aria-hidden="true" />
           bonistudio.core@gmail.com
-        </a>
-        <a href="https://github.com/BoniStudio" target="_blank" rel="noreferrer">
+        </GlassButton>
+        <GlassButton href="https://github.com/BoniStudio" target="_blank" rel="noreferrer">
           <Github size={18} aria-hidden="true" />
           {content.githubLabel}
-        </a>
-        <a href="#contact" aria-label={content.socialAriaLabel}>
+        </GlassButton>
+        <GlassButton href="#contact" aria-label={content.socialAriaLabel}>
           <Radio size={18} aria-hidden="true" />
           {content.socialLabel}
-        </a>
+        </GlassButton>
       </div>
     </section>
   );

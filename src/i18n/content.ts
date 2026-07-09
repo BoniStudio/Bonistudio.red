@@ -278,12 +278,12 @@ export const content: Record<Language, SiteContent> = {
     lab: {
       eyebrow: 'Interactive Lab',
       title: 'Small technical experiments that make the archive feel alive.',
-      copy: 'Particle reconstruction, neural maps, spatial cursors, and product records are mocked as a first lab surface for future deeper experiments.',
+      copy: 'Particle reconstruction, anomalous matter, neural maps, and product records are mocked as a first lab surface for future deeper experiments.',
       ariaLabel: 'Interactive lab modules',
       modules: [
         { id: 'scanner', title: 'Particle Scanner', label: 'object reconstruction', metric: '5.6k particles' },
         { id: 'grid', title: 'Neural Grid', label: 'latent routing map', metric: '42 nodes' },
-        { id: 'cursor', title: 'Spatial Cursor', label: 'presence field', metric: 'live vector' },
+        { id: 'cursor', title: 'Anomalous Matter', label: 'organic data core', metric: 'live mesh' },
         { id: 'archive', title: 'Product Archive', label: 'interactive index', metric: '6 records' },
       ],
       archiveItems: ['OvO', 'AMT', 'SLA', 'VR', 'HCP', 'BNS'],
@@ -463,12 +463,12 @@ export const content: Record<Language, SiteContent> = {
     lab: {
       eyebrow: '互动实验室',
       title: '用小型技术实验，让档案具备生命感。',
-      copy: '粒子重构、神经地图、空间光标和产品记录被组合成第一层实验表面，为未来更深入的交互做准备。',
+      copy: '粒子重构、异常物质、神经地图和产品记录被组合成第一层实验表面，为未来更深入的交互做准备。',
       ariaLabel: '互动实验室模块',
       modules: [
         { id: 'scanner', title: '粒子扫描器', label: '对象重构', metric: '5.6k 粒子' },
         { id: 'grid', title: '神经网格', label: '潜空间路由图', metric: '42 节点' },
-        { id: 'cursor', title: '空间光标', label: '临场域', metric: '实时向量' },
+        { id: 'cursor', title: '异常物质', label: '有机数据核心', metric: '实时网格' },
         { id: 'archive', title: '产品档案', label: '互动索引', metric: '6 条记录' },
       ],
       archiveItems: ['OvO', 'AMT', 'SLA', 'VR', 'HCP', 'BNS'],

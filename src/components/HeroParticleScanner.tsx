@@ -75,9 +75,6 @@ export function HeroParticleScanner({ content, isCompact }: HeroParticleScannerP
           <div className="hero-orb-shell">
             <AnomalousMatterOrb isCompact={isCompact} reducedMotion={reducedMotion} />
             <div className="hero-orb-shell__aura" />
-            <div className="hero-orb-shell__scan" />
-            <div className="hero-orb-shell__plane hero-orb-shell__plane--one" />
-            <div className="hero-orb-shell__plane hero-orb-shell__plane--two" />
           </div>
         </motion.div>
       </div>

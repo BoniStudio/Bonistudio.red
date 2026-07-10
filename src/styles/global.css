@@ -498,12 +498,12 @@ main {
 
 .hero-orb-shell {
   position: relative;
-  width: min(610px, 44vw);
-  min-width: 390px;
+  width: min(530px, 38vw);
+  min-width: 340px;
   aspect-ratio: 1;
   border-radius: 50%;
   overflow: visible;
-  filter: drop-shadow(0 0 52px rgba(104, 232, 255, 0.12));
+  filter: drop-shadow(0 0 48px rgba(234, 247, 255, 0.08));
 }
 
 .hero-orb-shell::before,
@@ -516,16 +516,15 @@ main {
 
 .hero-orb-shell::before {
   inset: 15%;
-  border: 1px solid rgba(234, 247, 255, 0.075);
-  box-shadow: inset 0 0 72px rgba(104, 232, 255, 0.028);
+  border: 1px solid rgba(234, 247, 255, 0.035);
+  box-shadow: inset 0 0 72px rgba(234, 247, 255, 0.018);
 }
 
 .hero-orb-shell::after {
   inset: -12%;
   background:
-    radial-gradient(circle, rgba(234, 247, 255, 0.08), transparent 36%),
-    radial-gradient(circle, rgba(104, 232, 255, 0.075), transparent 58%),
-    radial-gradient(circle, rgba(143, 107, 255, 0.045), transparent 70%);
+    radial-gradient(circle, rgba(234, 247, 255, 0.075), transparent 38%),
+    radial-gradient(circle, rgba(104, 232, 255, 0.035), transparent 62%);
   filter: blur(18px);
 }
 
@@ -552,57 +551,30 @@ main {
 
 .anomalous-orb__fallback {
   position: absolute;
-  inset: 8%;
+  inset: 11%;
   border-radius: 50%;
   background:
-    radial-gradient(circle at 50% 44%, rgba(234, 247, 255, 0.18), transparent 3px),
-    radial-gradient(circle at 42% 62%, rgba(104, 232, 255, 0.12), transparent 3px),
-    repeating-radial-gradient(circle, transparent 0 18px, rgba(234, 247, 255, 0.045) 19px 20px, transparent 21px 35px),
-    radial-gradient(circle, rgba(234, 247, 255, 0.085), transparent 58%);
+    radial-gradient(circle at 48% 42%, rgba(255, 255, 255, 0.26), transparent 3px),
+    radial-gradient(circle at 58% 54%, rgba(234, 247, 255, 0.18), transparent 2px),
+    radial-gradient(circle at 42% 60%, rgba(190, 216, 222, 0.12), transparent 3px),
+    radial-gradient(circle, rgba(234, 247, 255, 0.07) 0 1px, transparent 1.7px) 0 0 / 12px 12px,
+    radial-gradient(circle, rgba(234, 247, 255, 0.085), rgba(234, 247, 255, 0.028) 48%, transparent 68%);
   box-shadow:
-    inset 0 0 58px rgba(234, 247, 255, 0.08),
-    0 0 68px rgba(104, 232, 255, 0.1);
-  mask-image: radial-gradient(circle, #000 0 57%, transparent 66%);
-}
-
-.hero-orb-shell__scan {
-  position: absolute;
-  top: 14%;
-  right: 12%;
-  left: 12%;
-  z-index: 3;
-  height: 1px;
-  pointer-events: none;
-  background: linear-gradient(90deg, transparent, rgba(104, 232, 255, 0.22), rgba(234, 247, 255, 0.38), transparent);
-  opacity: 0.42;
-  animation: orb-scan 8.6s ease-in-out infinite;
+    inset 0 0 66px rgba(234, 247, 255, 0.075),
+    0 0 76px rgba(234, 247, 255, 0.08);
+  mask-image: radial-gradient(circle, #000 0 54%, transparent 68%);
 }
 
 .hero-orb-shell__aura {
   position: absolute;
-  inset: -2%;
+  inset: -8%;
   z-index: 1;
   border-radius: 50%;
   pointer-events: none;
   background:
-    radial-gradient(circle, rgba(234, 247, 255, 0.05), transparent 45%),
-    radial-gradient(circle, rgba(104, 232, 255, 0.055), transparent 66%);
+    radial-gradient(circle, rgba(234, 247, 255, 0.048), transparent 45%),
+    radial-gradient(circle, rgba(104, 232, 255, 0.026), transparent 66%);
   mask-image: radial-gradient(circle, transparent 0 34%, #000 48%, transparent 72%);
-}
-
-.hero-orb-shell__plane {
-  position: absolute;
-  z-index: 1;
-  inset: 7%;
-  border: 1px solid rgba(234, 247, 255, 0.055);
-  border-radius: 50%;
-  pointer-events: none;
-  transform: rotate(-18deg) scaleX(0.72);
-}
-
-.hero-orb-shell__plane--two {
-  border-color: rgba(104, 232, 255, 0.06);
-  transform: rotate(32deg) scaleX(0.54);
 }
 
 
@@ -1390,18 +1362,6 @@ main {
   color: var(--cyan);
 }
 
-@keyframes orb-scan {
-  0%,
-  100% {
-    top: 16%;
-    opacity: 0.16;
-  }
-  48% {
-    top: 76%;
-    opacity: 0.62;
-  }
-}
-
 @keyframes project-scan {
   from {
     background-position: 140% 0, 0 0;
@@ -1429,7 +1389,7 @@ main {
   }
 
   .hero-orb-shell {
-    width: min(520px, 43vw);
+    width: min(490px, 39vw);
   }
 }
 
@@ -1480,7 +1440,7 @@ main {
   }
 
   .hero-orb-shell {
-    width: min(520px, 84vw);
+    width: min(470px, 78vw);
     min-width: 300px;
   }
 
@@ -1580,7 +1540,7 @@ main {
   }
 
   .hero-orb-shell {
-    width: min(350px, 94vw);
+    width: min(320px, 88vw);
     min-width: 0;
   }
 

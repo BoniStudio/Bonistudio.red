@@ -77,79 +77,105 @@ const sharedNoise = `
   }
 `;
 
-const orbVertexShader = `
+const surfaceVertexShader = `
   precision highp float;
 
   uniform float uTime;
-  uniform float uScan;
+  uniform float uDisplacement;
   uniform vec2 uMouse;
+  varying vec3 vDirection;
   varying vec3 vNormal;
   varying vec3 vWorldPosition;
-  varying float vNoise;
-  varying float vRidge;
-  varying float vScan;
+  varying float vSurfaceNoise;
+  varying float vFold;
 
   ${sharedNoise}
 
   void main() {
     vec3 direction = normalize(position);
-    float longitude = atan(direction.z, direction.x);
-    float low = snoise(direction * 1.85 + vec3(uTime * 0.08, -uTime * 0.05, uTime * 0.04));
-    float mid = snoise(direction * 4.7 + vec3(-uTime * 0.12, uTime * 0.08, uTime * 0.03));
-    float high = snoise(direction * 10.2 + vec3(uTime * 0.16, uTime * 0.03, -uTime * 0.11));
-    float wave = sin(longitude * 6.0 + direction.y * 8.0 + uTime * 0.72) * 0.052;
-    float ridge = pow(abs(sin(longitude * 5.0 + low * 3.2 + uTime * 0.42)), 5.0);
-    float displacement = low * 0.2 + mid * 0.095 + high * 0.026 + wave + ridge * 0.09;
+    float low = snoise(direction * 1.55 + vec3(uTime * 0.045, -uTime * 0.035, uTime * 0.025));
+    float mid = snoise(direction * 3.8 + vec3(-uTime * 0.075, uTime * 0.052, uTime * 0.03));
+    float high = snoise(direction * 8.4 + vec3(uTime * 0.105, uTime * 0.032, -uTime * 0.08));
+    float fold = pow(abs(sin(low * 3.2 + mid * 2.1 + direction.y * 4.8 + uTime * 0.22)), 3.2);
+    float slowWave = sin(direction.x * 4.1 + direction.z * 3.4 + low * 2.8 + uTime * 0.18) * 0.045;
+    float displacement = (low * 0.58 + mid * 0.3 + high * 0.1 + fold * 0.3 + slowWave) * uDisplacement;
 
     vec3 transformed = position + normal * displacement;
-    transformed.x += uMouse.x * 0.03;
-    transformed.y += uMouse.y * 0.02;
+    transformed.x += uMouse.x * 0.022;
+    transformed.y += uMouse.y * 0.016;
 
     vec4 worldPosition = modelMatrix * vec4(transformed, 1.0);
     vec4 mvPosition = modelViewMatrix * vec4(transformed, 1.0);
 
+    vDirection = direction;
     vNormal = normalize(normalMatrix * normalize(normal + direction * displacement));
     vWorldPosition = worldPosition.xyz;
-    vNoise = low * 0.5 + 0.5;
-    vRidge = ridge;
-    vScan = 1.0 - smoothstep(0.0, 0.075, abs(direction.y - uScan));
+    vSurfaceNoise = low * 0.5 + 0.5;
+    vFold = fold;
 
     gl_Position = projectionMatrix * mvPosition;
   }
 `;
 
-const orbFragmentShader = `
+const surfaceFragmentShader = `
   precision highp float;
 
   uniform float uTime;
   uniform float uOpacity;
+  uniform float uLineGain;
   uniform vec3 pointLightPosition;
+  varying vec3 vDirection;
   varying vec3 vNormal;
   varying vec3 vWorldPosition;
-  varying float vNoise;
-  varying float vRidge;
-  varying float vScan;
+  varying float vSurfaceNoise;
+  varying float vFold;
+
+  ${sharedNoise}
+
+  float contourLine(float field, float target, float width) {
+    return smoothstep(width, 0.0, abs(field - target));
+  }
 
   void main() {
     vec3 normal = normalize(vNormal);
     vec3 viewDirection = normalize(cameraPosition - vWorldPosition);
     vec3 lightDirection = normalize(pointLightPosition - vWorldPosition);
     float diffuse = max(dot(normal, lightDirection), 0.0);
-    float rim = pow(1.0 - max(dot(viewDirection, normal), 0.0), 2.45);
-    float pulse = 0.5 + 0.5 * sin(uTime * 0.58 + vNoise * 7.0);
+    float fresnel = pow(1.0 - max(dot(viewDirection, normal), 0.0), 2.15);
 
-    vec3 graphite = vec3(0.09, 0.105, 0.12);
-    vec3 silver = vec3(0.82, 0.9, 0.94);
-    vec3 cyan = vec3(0.42, 0.91, 1.0);
-    vec3 blue = vec3(0.34, 0.52, 0.94);
-    vec3 violet = vec3(0.55, 0.44, 0.86);
+    vec3 flow = vDirection + vec3(
+      snoise(vDirection * 2.1 + vec3(uTime * 0.08, 0.0, 0.0)),
+      snoise(vDirection * 2.4 + vec3(0.0, -uTime * 0.07, 0.0)),
+      snoise(vDirection * 2.0 + vec3(0.0, 0.0, uTime * 0.05))
+    ) * 0.18;
 
-    vec3 color = mix(graphite, silver, 0.28 + diffuse * 0.38 + vRidge * 0.3);
-    color = mix(color, cyan, rim * 0.18 + vScan * 0.16);
-    color = mix(color, blue, vNoise * 0.12);
-    color = mix(color, violet, pulse * 0.045);
+    float fieldA = snoise(flow * 3.1 + vec3(uTime * 0.12, -uTime * 0.045, uTime * 0.03));
+    float fieldB = snoise(flow * 6.2 + vec3(-uTime * 0.07, uTime * 0.1, -uTime * 0.055));
+    float fieldC = snoise(flow * 10.0 + vec3(uTime * 0.05, uTime * 0.025, -uTime * 0.09));
+    float field = fieldA * 0.66 + fieldB * 0.27 + fieldC * 0.12;
 
-    float alpha = uOpacity * (0.15 + diffuse * 0.18 + rim * 0.36 + vRidge * 0.16 + vScan * 0.18);
+    float filament =
+      contourLine(field, 0.18, 0.035) * 0.9 +
+      contourLine(field, -0.24, 0.028) * 0.62 +
+      contourLine(fieldB + fieldA * 0.28, 0.36, 0.03) * 0.38;
+    filament *= smoothstep(0.08, 0.78, vFold + vSurfaceNoise * 0.55);
+
+    float innerGlow = smoothstep(0.48, 0.95, fieldA * 0.5 + 0.5) * 0.18;
+    float microDensity = 0.38 + vSurfaceNoise * 0.32 + vFold * 0.2;
+
+    vec3 graphite = vec3(0.055, 0.06, 0.066);
+    vec3 smoke = vec3(0.33, 0.35, 0.36);
+    vec3 silver = vec3(0.78, 0.82, 0.82);
+    vec3 white = vec3(0.96, 0.98, 0.98);
+    vec3 softCyan = vec3(0.62, 0.88, 0.94);
+
+    vec3 base = mix(graphite, smoke, microDensity);
+    base = mix(base, silver, diffuse * 0.26 + fresnel * 0.22);
+    vec3 energy = mix(white, softCyan, 0.12);
+    vec3 color = base + energy * filament * (0.62 * uLineGain);
+    color += white * (innerGlow + fresnel * 0.12);
+
+    float alpha = uOpacity * (0.2 + diffuse * 0.07 + fresnel * 0.38 + vFold * 0.1 + filament * 0.32 * uLineGain);
     gl_FragColor = vec4(color, alpha);
   }
 `;
@@ -157,37 +183,30 @@ const orbFragmentShader = `
 const pointVertexShader = `
   precision highp float;
 
+  attribute float aSeed;
   uniform float uTime;
-  uniform float uScan;
   uniform float uPixelRatio;
   uniform vec2 uMouse;
   varying float vAlpha;
-  varying float vNoise;
-  varying float vRidge;
-  varying float vScan;
+  varying float vTone;
 
   ${sharedNoise}
 
   void main() {
     vec3 direction = normalize(position);
-    float longitude = atan(direction.z, direction.x);
-    float low = snoise(direction * 1.85 + vec3(uTime * 0.08, -uTime * 0.05, uTime * 0.04));
-    float mid = snoise(direction * 5.0 + vec3(-uTime * 0.11, uTime * 0.08, uTime * 0.04));
-    float high = snoise(direction * 12.0 + vec3(uTime * 0.14, uTime * 0.03, -uTime * 0.1));
-    float ridge = pow(abs(sin(longitude * 5.0 + low * 3.2 + uTime * 0.42)), 5.0);
-    float displacement = low * 0.22 + mid * 0.11 + high * 0.035 + ridge * 0.11;
-    vec3 transformed = position + normal * displacement;
-    transformed.x += uMouse.x * 0.035;
-    transformed.y += uMouse.y * 0.024;
+    float low = snoise(direction * 1.7 + vec3(uTime * 0.04, -uTime * 0.03, uTime * 0.02));
+    float mid = snoise(direction * 5.2 + vec3(-uTime * 0.07, uTime * 0.04, -uTime * 0.055));
+    float fold = pow(abs(sin(low * 3.0 + mid * 1.8 + direction.y * 4.2 + uTime * 0.18)), 3.0);
+    vec3 transformed = direction * (1.13 + low * 0.064 + mid * 0.03 + fold * 0.05 + (aSeed - 0.5) * 0.016);
+    transformed.x += uMouse.x * 0.024;
+    transformed.y += uMouse.y * 0.017;
 
     vec4 mvPosition = modelViewMatrix * vec4(transformed, 1.0);
     gl_Position = projectionMatrix * mvPosition;
 
-    vNoise = low * 0.5 + 0.5;
-    vRidge = ridge;
-    vScan = 1.0 - smoothstep(0.0, 0.075, abs(direction.y - uScan));
-    vAlpha = 0.18 + vNoise * 0.26 + ridge * 0.3 + vScan * 0.36;
-    gl_PointSize = (0.95 + vRidge * 1.35 + vScan * 1.7) * uPixelRatio * (4.6 / max(2.25, -mvPosition.z));
+    vTone = low * 0.5 + 0.5;
+    vAlpha = 0.15 + vTone * 0.23 + fold * 0.18;
+    gl_PointSize = (0.4 + fold * 0.32 + aSeed * 0.14) * uPixelRatio * (5.0 / max(2.4, -mvPosition.z));
   }
 `;
 
@@ -195,18 +214,14 @@ const pointFragmentShader = `
   precision highp float;
 
   varying float vAlpha;
-  varying float vNoise;
-  varying float vRidge;
-  varying float vScan;
+  varying float vTone;
 
   void main() {
     vec2 point = gl_PointCoord - vec2(0.5);
-    float dotShape = smoothstep(0.48, 0.08, length(point));
-    vec3 silver = vec3(0.86, 0.94, 0.98);
-    vec3 cyan = vec3(0.42, 0.91, 1.0);
-    vec3 violet = vec3(0.55, 0.44, 0.86);
-    vec3 color = mix(silver, cyan, vRidge * 0.22 + vScan * 0.2);
-    color = mix(color, violet, smoothstep(0.66, 1.0, vNoise) * 0.12);
+    float dotShape = smoothstep(0.5, 0.06, length(point));
+    vec3 gray = vec3(0.68, 0.7, 0.7);
+    vec3 white = vec3(0.94, 0.96, 0.96);
+    vec3 color = mix(gray, white, smoothstep(0.38, 0.9, vTone));
     gl_FragColor = vec4(color, dotShape * vAlpha);
   }
 `;
@@ -217,13 +232,19 @@ type AnomalousMatterOrbProps = {
   reducedMotion?: boolean;
 };
 
-type OrbUniforms = {
+type SurfaceUniforms = {
   uTime: { value: number };
-  uScan: { value: number };
+  uDisplacement: { value: number };
   uMouse: { value: THREE.Vector2 };
-  uPixelRatio: { value: number };
   uOpacity: { value: number };
+  uLineGain: { value: number };
   pointLightPosition: { value: THREE.Vector3 };
+};
+
+type PointUniforms = {
+  uTime: { value: number };
+  uPixelRatio: { value: number };
+  uMouse: { value: THREE.Vector2 };
 };
 
 function getWebGLAvailability() {
@@ -248,68 +269,39 @@ function createSeededRandom(seed = 2718) {
   };
 }
 
-function createHaloGeometry(radius: number) {
-  const positions: number[] = [];
-  const segmentCount = 196;
-  const random = createSeededRandom(921);
-  const tilts = [
-    { x: 0.18, y: 0.08, z: -0.14, scale: 0.72 },
-    { x: -0.2, y: 0.18, z: 0.54, scale: 0.6 },
-    { x: 0.1, y: -0.12, z: 1.12, scale: 0.84 },
-    { x: -0.38, y: 0.06, z: -0.64, scale: 0.54 },
-  ];
+function createSurfaceParticleGeometry(count: number) {
+  const random = createSeededRandom(908);
+  const positions = new Float32Array(count * 3);
+  const seeds = new Float32Array(count);
+  const goldenAngle = Math.PI * (3 - Math.sqrt(5));
 
-  tilts.forEach((tilt, ringIndex) => {
-    const matrix = new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(tilt.x, tilt.y, tilt.z));
-    const wobble = 0.04 + random() * 0.035;
+  for (let i = 0; i < count; i += 1) {
+    const y = 1 - (i / Math.max(1, count - 1)) * 2;
+    const radiusAtY = Math.sqrt(Math.max(0, 1 - y * y));
+    const theta = i * goldenAngle + (random() - 0.5) * 0.018;
+    const radius = 1 + (random() - 0.5) * 0.018;
 
-    for (let i = 0; i < segmentCount; i += 1) {
-      const a = (i / segmentCount) * Math.PI * 2;
-      const b = ((i + 1) / segmentCount) * Math.PI * 2;
-      const waveA = Math.sin(a * (3 + ringIndex) + ringIndex) * wobble;
-      const waveB = Math.sin(b * (3 + ringIndex) + ringIndex) * wobble;
-      const pointA = new THREE.Vector3(
-        Math.cos(a) * (radius + waveA),
-        Math.sin(a * 2.0 + ringIndex) * wobble,
-        Math.sin(a) * (radius * tilt.scale + waveA),
-      ).applyMatrix4(matrix);
-      const pointB = new THREE.Vector3(
-        Math.cos(b) * (radius + waveB),
-        Math.sin(b * 2.0 + ringIndex) * wobble,
-        Math.sin(b) * (radius * tilt.scale + waveB),
-      ).applyMatrix4(matrix);
-
-      positions.push(pointA.x, pointA.y, pointA.z, pointB.x, pointB.y, pointB.z);
-    }
-  });
-
-  const geometry = new THREE.BufferGeometry();
-  geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-  return geometry;
-}
-
-function createFilamentGeometry(radius: number, segmentCount: number) {
-  const random = createSeededRandom(404);
-  const positions: number[] = [];
-
-  for (let i = 0; i < segmentCount; i += 1) {
-    const theta = random() * Math.PI * 2;
-    const phi = Math.acos(2 * random() - 1);
-    const length = 0.16 + random() * 0.34;
-    const start = new THREE.Vector3(
-      Math.sin(phi) * Math.cos(theta),
-      Math.cos(phi),
-      Math.sin(phi) * Math.sin(theta),
-    ).multiplyScalar(radius * (0.64 + random() * 0.42));
-    const tangent = new THREE.Vector3(-start.z, start.y * 0.2, start.x).normalize();
-    const end = start.clone().add(tangent.multiplyScalar(length));
-
-    positions.push(start.x, start.y, start.z, end.x, end.y, end.z);
+    positions[i * 3] = Math.cos(theta) * radiusAtY * radius;
+    positions[i * 3 + 1] = y * radius;
+    positions[i * 3 + 2] = Math.sin(theta) * radiusAtY * radius;
+    seeds[i] = random();
   }
 
   const geometry = new THREE.BufferGeometry();
-  geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  geometry.setAttribute('aSeed', new THREE.BufferAttribute(seeds, 1));
   return geometry;
+}
+
+function createSurfaceUniforms(opacity: number, displacement: number, lineGain: number): SurfaceUniforms {
+  return {
+    uTime: { value: 0 },
+    uDisplacement: { value: displacement },
+    uMouse: { value: new THREE.Vector2() },
+    uOpacity: { value: opacity },
+    uLineGain: { value: lineGain },
+    pointLightPosition: { value: new THREE.Vector3(2.1, 1.65, 3.2) },
+  };
 }
 
 export function AnomalousMatterOrb({
@@ -381,8 +373,8 @@ export function AnomalousMatterOrb({
 
     try {
       const scene = new THREE.Scene();
-      camera = new THREE.PerspectiveCamera(34, 1, 0.1, 100);
-      camera.position.set(0, 0, isCompact ? 5.4 : 5.0);
+      camera = new THREE.PerspectiveCamera(33, 1, 0.1, 100);
+      camera.position.set(0, 0, isCompact ? 5.45 : 5.15);
 
       renderer = new THREE.WebGLRenderer({
         alpha: true,
@@ -390,66 +382,62 @@ export function AnomalousMatterOrb({
         powerPreference: isCompact ? 'low-power' : 'high-performance',
       });
       renderer.setClearColor(0x000000, 0);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isCompact ? 1.15 : 1.5));
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isCompact ? 1.12 : 1.42));
       renderer.domElement.setAttribute('aria-hidden', 'true');
       mount.appendChild(renderer.domElement);
 
       const group = new THREE.Group();
-      group.rotation.set(0.12, -0.42, -0.06);
+      group.rotation.set(0.1, -0.34, -0.04);
       scene.add(group);
 
-      const radius = 1.42;
-      const detail = reducedMotion ? 4 : isCompact ? 5 : 6;
-      const orbGeometry = new THREE.IcosahedronGeometry(radius, detail);
-      const haloGeometry = createHaloGeometry(radius * 1.23);
-      const filamentGeometry = createFilamentGeometry(radius, isCompact ? 62 : 108);
-      geometries.push(orbGeometry, haloGeometry, filamentGeometry);
+      const surfaceSegments = reducedMotion ? 96 : isCompact ? 112 : 160;
+      const coreGeometry = new THREE.SphereGeometry(1.13, surfaceSegments, surfaceSegments);
+      const shellGeometry = new THREE.SphereGeometry(1.13, isCompact ? 104 : 152, isCompact ? 104 : 152);
+      const pointGeometry = createSurfaceParticleGeometry(reducedMotion ? 9000 : isCompact ? 14000 : 32000);
+      geometries.push(coreGeometry, shellGeometry, pointGeometry);
 
-      const uniforms: OrbUniforms = {
+      const coreUniforms = createSurfaceUniforms(isCompact ? 0.42 : 0.5, 0.13, 1.34);
+      const shellUniforms = createSurfaceUniforms(isCompact ? 0.09 : 0.12, 0.2, 0.5);
+      const pointUniforms: PointUniforms = {
         uTime: { value: 0 },
-        uScan: { value: -0.7 },
+        uPixelRatio: { value: Math.min(window.devicePixelRatio || 1, isCompact ? 1.12 : 1.42) },
         uMouse: { value: new THREE.Vector2() },
-        uPixelRatio: { value: Math.min(window.devicePixelRatio || 1, isCompact ? 1.15 : 1.5) },
-        uOpacity: { value: isCompact ? 0.72 : 0.82 },
-        pointLightPosition: { value: new THREE.Vector3(2.3, 1.9, 3.2) },
       };
 
-      const meshMaterial = new THREE.ShaderMaterial({
-        uniforms,
-        vertexShader: orbVertexShader,
-        fragmentShader: orbFragmentShader,
+      const coreMaterial = new THREE.ShaderMaterial({
+        uniforms: coreUniforms,
+        vertexShader: surfaceVertexShader,
+        fragmentShader: surfaceFragmentShader,
         transparent: true,
         depthWrite: false,
-        blending: THREE.AdditiveBlending,
-        wireframe: true,
+        blending: THREE.NormalBlending,
+        side: THREE.FrontSide,
+      });
+      const shellMaterial = new THREE.ShaderMaterial({
+        uniforms: shellUniforms,
+        vertexShader: surfaceVertexShader,
+        fragmentShader: surfaceFragmentShader,
+        transparent: true,
+        depthWrite: false,
+        blending: THREE.NormalBlending,
+        side: THREE.FrontSide,
       });
       const pointMaterial = new THREE.ShaderMaterial({
-        uniforms,
+        uniforms: pointUniforms,
         vertexShader: pointVertexShader,
         fragmentShader: pointFragmentShader,
         transparent: true,
         depthWrite: false,
-        blending: THREE.AdditiveBlending,
+        blending: THREE.NormalBlending,
       });
-      const haloMaterial = new THREE.LineBasicMaterial({
-        color: 0xcfeeff,
-        transparent: true,
-        opacity: 0.16,
-        blending: THREE.AdditiveBlending,
-      });
-      const filamentMaterial = new THREE.LineBasicMaterial({
-        color: 0x8fdfff,
-        transparent: true,
-        opacity: 0.09,
-        blending: THREE.AdditiveBlending,
-      });
-      materials.push(meshMaterial, pointMaterial, haloMaterial, filamentMaterial);
+      materials.push(coreMaterial, shellMaterial, pointMaterial);
 
-      const orbMesh = new THREE.Mesh(orbGeometry, meshMaterial);
-      const points = new THREE.Points(orbGeometry, pointMaterial);
-      const halos = new THREE.LineSegments(haloGeometry, haloMaterial);
-      const filaments = new THREE.LineSegments(filamentGeometry, filamentMaterial);
-      group.add(filaments, halos, orbMesh, points);
+      const shellMesh = new THREE.Mesh(shellGeometry, shellMaterial);
+      shellMesh.scale.setScalar(1.1);
+      const coreMesh = new THREE.Mesh(coreGeometry, coreMaterial);
+      const microPoints = new THREE.Points(pointGeometry, pointMaterial);
+      microPoints.scale.setScalar(1.03);
+      group.add(shellMesh, coreMesh, microPoints);
 
       syncSize();
       if (typeof ResizeObserver !== 'undefined') {
@@ -464,16 +452,23 @@ export function AnomalousMatterOrb({
 
       const animate = (elapsedMs: number) => {
         const time = elapsedMs * 0.001;
-        pointer.lerp(targetPointer, 0.04);
-        uniforms.uTime.value = reducedMotion ? 0 : time;
-        uniforms.uMouse.value.copy(pointer);
-        uniforms.uScan.value = Math.sin(time * 0.34) * 0.82;
-        uniforms.pointLightPosition.value.set(2.25 + pointer.x * 0.72, 1.8 + pointer.y * 0.46, 3.1);
+        pointer.lerp(targetPointer, 0.035);
+        const animatedTime = reducedMotion ? 0 : time;
 
-        group.rotation.y = -0.42 + (reducedMotion ? 0 : time * 0.04) + pointer.x * 0.06;
-        group.rotation.x = 0.12 + pointer.y * 0.04;
-        halos.rotation.z = reducedMotion ? -0.06 : -0.06 + time * 0.016;
-        filaments.rotation.y = reducedMotion ? 0 : Math.sin(time * 0.12) * 0.035;
+        coreUniforms.uTime.value = animatedTime;
+        shellUniforms.uTime.value = animatedTime;
+        pointUniforms.uTime.value = animatedTime;
+        coreUniforms.uMouse.value.copy(pointer);
+        shellUniforms.uMouse.value.copy(pointer);
+        pointUniforms.uMouse.value.copy(pointer);
+        coreUniforms.pointLightPosition.value.set(2.05 + pointer.x * 0.5, 1.55 + pointer.y * 0.36, 3.15);
+        shellUniforms.pointLightPosition.value.copy(coreUniforms.pointLightPosition.value);
+
+        group.rotation.y = -0.34 + (reducedMotion ? 0 : time * 0.028) + pointer.x * 0.045;
+        group.rotation.x = 0.1 + pointer.y * 0.032;
+        shellMesh.rotation.y = reducedMotion ? 0 : -time * 0.016;
+        shellMesh.rotation.z = reducedMotion ? 0 : Math.sin(time * 0.11) * 0.025;
+        microPoints.rotation.y = reducedMotion ? 0 : time * 0.018;
 
         if (renderer && camera) {
           renderer.render(scene, camera);

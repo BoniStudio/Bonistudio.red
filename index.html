@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#050506" />
+    <meta name="color-scheme" content="dark" />
+    <meta
+      name="description"
+      content="BoniStudio is an AI-native studio building products, games, and interactive worlds."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="BoniStudio" />
+    <meta property="og:title" content="BoniStudio | AI-native products, games, and interactive worlds" />
+    <meta property="og:description" content="An AI-native studio building products, games, and interactive worlds." />
+    <meta property="og:url" content="https://bonistudio.red/" />
+    <meta property="og:image" content="https://bonistudio.red/og.png" />
+    <meta property="og:image:width" content="1732" />
+    <meta property="og:image:height" content="908" />
+    <meta property="og:image:alt" content="BoniStudio intelligent signal monolith" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="BoniStudio | AI-native studio" />
+    <meta name="twitter:description" content="AI-native products, games, and interactive worlds." />
+    <meta name="twitter:image" content="https://bonistudio.red/og.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=Manrope:wght@400;500;600&amp;family=Noto+Sans+SC:wght@400;500;600&amp;family=Space+Grotesk:wght@400;500;600&amp;display=swap"
+      rel="stylesheet"
+    />
+    <title>BoniStudio | AI-native products, games, and interactive worlds</title>
+    <style>
+      :root { color-scheme: dark; background: #050506; }
+      body { margin: 0; background: #050506; }
+      .signal-boot {
+        display: grid;
+        min-height: 100svh;
+        place-items: center;
+        color: #f3f0e8;
+        background: #050506;
+        font-family: Arial, sans-serif;
+      }
+      .signal-boot strong {
+        font-size: clamp(2.8rem, 10vw, 8rem);
+        letter-spacing: -0.08em;
+      }
+      .signal-boot i {
+        width: 42px;
+        height: 2px;
+        margin-top: 18px;
+        background: #c9ff38;
+        animation: boot-signal 900ms ease-in-out infinite alternate;
+      }
+      @keyframes boot-signal { to { width: 180px; opacity: 0.35; } }
+      @media (prefers-reduced-motion: reduce) { .signal-boot i { animation: none; } }
+    </style>
+  </head>
+  <body>
+    <div id="root">
+      <div class="signal-boot" aria-label="Loading BoniStudio">
+        <strong>BONISTUDIO</strong>
+        <i aria-hidden="true"></i>
+      </div>
+    </div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

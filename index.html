@@ -3,371 +3,64 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#050506" />
+    <meta name="color-scheme" content="dark" />
     <meta
       name="description"
       content="BoniStudio is an AI-native studio building products, games, and interactive worlds."
     />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="BoniStudio" />
+    <meta property="og:title" content="BoniStudio | AI-native products, games, and interactive worlds" />
+    <meta property="og:description" content="An AI-native studio building products, games, and interactive worlds." />
+    <meta property="og:url" content="https://bonistudio.red/" />
+    <meta property="og:image" content="https://bonistudio.red/og.png" />
+    <meta property="og:image:width" content="1732" />
+    <meta property="og:image:height" content="908" />
+    <meta property="og:image:alt" content="BoniStudio intelligent signal monolith" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="BoniStudio | AI-native studio" />
+    <meta name="twitter:description" content="AI-native products, games, and interactive worlds." />
+    <meta name="twitter:image" content="https://bonistudio.red/og.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&family=Share+Tech&display=swap"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=Manrope:wght@400;500;600&amp;family=Noto+Sans+SC:wght@400;500;600&amp;family=Space+Grotesk:wght@400;500;600&amp;display=swap"
       rel="stylesheet"
     />
     <title>BoniStudio | AI-native products, games, and interactive worlds</title>
     <style>
-      :root {
-        color-scheme: dark;
-        --fallback-bg: #030608;
-        --fallback-panel: rgba(9, 13, 18, 0.72);
-        --fallback-line: rgba(210, 236, 255, 0.13);
-        --fallback-text: #eaf7ff;
-        --fallback-muted: rgba(220, 240, 255, 0.62);
-        --fallback-faint: rgba(220, 240, 255, 0.38);
-        --fallback-cyan: #68e8ff;
-        --fallback-blue: #4c8dff;
-        --fallback-violet: #8f6bff;
-        --fallback-display:
-          "Share Tech", "IBM Plex Sans", "Inter", "Helvetica Neue", Arial, sans-serif;
-        --fallback-body:
-          "IBM Plex Sans", "Inter", "Helvetica Neue", Arial, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      }
-
-      * {
-        box-sizing: border-box;
-      }
-
-      html {
-        background: var(--fallback-bg);
-      }
-
-      body {
-        min-width: 320px;
-        margin: 0;
-        color: var(--fallback-text);
-        background:
-          radial-gradient(circle at 75% 28%, rgba(104, 232, 255, 0.12), transparent 30%),
-          radial-gradient(circle at 18% 70%, rgba(76, 141, 255, 0.08), transparent 30%),
-          linear-gradient(90deg, rgba(210, 236, 255, 0.026) 1px, transparent 1px) 0 0 / 92px 92px,
-          linear-gradient(0deg, rgba(210, 236, 255, 0.02) 1px, transparent 1px) 0 0 / 92px 92px,
-          var(--fallback-bg);
-        font-family: var(--fallback-body);
-        overflow-x: hidden;
-      }
-
-      a {
-        color: inherit;
-        text-decoration: none;
-      }
-
-      #root {
-        min-height: 100svh;
-        animation: shell-in 820ms ease-out both;
-      }
-
-      .static-site {
-        min-height: 100svh;
-        padding: 24px clamp(18px, 5vw, 72px) 40px;
-        position: relative;
-        isolation: isolate;
-      }
-
-      .static-site::before,
-      .static-site::after {
-        position: fixed;
-        inset: 0;
-        z-index: -1;
-        pointer-events: none;
-        content: "";
-      }
-
-      .static-site::before {
-        background:
-          radial-gradient(circle at 72% 36%, rgba(104, 232, 255, 0.12), transparent 24%),
-          radial-gradient(circle at 70% 36%, rgba(143, 107, 255, 0.08), transparent 34%);
-        filter: blur(2px);
-      }
-
-      .static-site::after {
-        opacity: 0.1;
-        background:
-          repeating-linear-gradient(0deg, rgba(234, 247, 255, 0.16) 0 1px, transparent 1px 5px),
-          radial-gradient(circle, rgba(234, 247, 255, 0.14) 0 1px, transparent 1px) 0 0 / 18px 18px;
-        mix-blend-mode: screen;
-      }
-
-      .static-header,
-      .static-section,
-      .static-footer {
-        width: min(1180px, 100%);
-        margin: 0 auto;
-      }
-
-      .static-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 18px;
-        border: 1px solid var(--fallback-line);
-        border-radius: 999px;
-        padding: 10px 14px 10px 18px;
-        background: rgba(3, 6, 8, 0.72);
-        backdrop-filter: blur(18px);
-      }
-
-      .static-brand {
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-        color: var(--fallback-text);
-        font-family: var(--fallback-display);
-        font-size: 1.02rem;
-      }
-
-      .static-brand strong {
-        font-weight: 400;
-      }
-
-      .static-brand strong span {
-        color: var(--fallback-cyan);
-        text-shadow: 0 0 18px rgba(104, 232, 255, 0.24);
-      }
-
-      .static-brand small {
-        color: var(--fallback-faint);
-        font-family: var(--fallback-body);
-        font-size: 0.62rem;
-        text-transform: uppercase;
-      }
-
-      .static-nav {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: flex-end;
-        gap: clamp(10px, 1.8vw, 22px);
-        color: var(--fallback-muted);
-        font-family: var(--fallback-display);
-        font-size: 0.86rem;
-      }
-
-      .static-hero {
+      :root { color-scheme: dark; background: #050506; }
+      body { margin: 0; background: #050506; }
+      .signal-boot {
         display: grid;
-        min-height: 68svh;
-        grid-template-columns: minmax(0, 0.95fr) minmax(320px, 0.72fr);
-        align-items: center;
-        gap: clamp(28px, 5vw, 72px);
-        padding: clamp(82px, 12vw, 150px) 0 clamp(58px, 8vw, 92px);
+        min-height: 100svh;
+        place-items: center;
+        color: #f3f0e8;
+        background: #050506;
+        font-family: Arial, sans-serif;
       }
-
-      .static-kicker,
-      .static-label {
-        margin: 0;
-        color: var(--fallback-cyan);
-        font-family: var(--fallback-display);
-        font-size: 0.82rem;
-        text-transform: uppercase;
+      .signal-boot strong {
+        font-size: clamp(2.8rem, 10vw, 8rem);
+        letter-spacing: -0.08em;
       }
-
-      .static-hero h1 {
-        margin: 16px 0 0;
-        color: var(--fallback-text);
-        font-family: var(--fallback-display);
-        font-size: clamp(4rem, 11vw, 8.4rem);
-        font-weight: 400;
-        line-height: 0.86;
+      .signal-boot i {
+        width: 42px;
+        height: 2px;
+        margin-top: 18px;
+        background: #c9ff38;
+        animation: boot-signal 900ms ease-in-out infinite alternate;
       }
-
-      .static-hero h1 span {
-        color: var(--fallback-cyan);
-      }
-
-      .static-hero p:last-child {
-        max-width: 650px;
-        margin: 24px 0 0;
-        color: var(--fallback-muted);
-        font-size: clamp(1.05rem, 2vw, 1.42rem);
-        line-height: 1.5;
-      }
-
-      .static-globe {
-        position: relative;
-        width: min(430px, 100%);
-        aspect-ratio: 1;
-        justify-self: center;
-        border-radius: 50%;
-        background:
-          radial-gradient(circle, rgba(234, 247, 255, 0.18) 0 1px, transparent 1.5px) 0 0 / 18px 18px,
-          radial-gradient(circle, rgba(104, 232, 255, 0.16), transparent 62%);
-        mask-image: radial-gradient(circle, #000 0 61%, transparent 62%);
-        opacity: 0.95;
-        filter: drop-shadow(0 0 42px rgba(104, 232, 255, 0.12));
-      }
-
-      .static-globe::before,
-      .static-globe::after {
-        position: absolute;
-        inset: 9%;
-        border: 1px solid rgba(210, 236, 255, 0.13);
-        border-radius: 50%;
-        content: "";
-      }
-
-      .static-globe::before {
-        transform: rotate(-18deg) scaleX(0.58);
-      }
-
-      .static-globe::after {
-        transform: rotate(18deg) scaleY(0.58);
-      }
-
-      .static-section {
-        border-top: 1px solid rgba(210, 236, 255, 0.12);
-        padding: 56px 0;
-      }
-
-      .static-section h2 {
-        margin: 0;
-        color: var(--fallback-text);
-        font-family: var(--fallback-display);
-        font-size: clamp(2rem, 5vw, 4rem);
-        font-weight: 400;
-        line-height: 1;
-      }
-
-      .static-grid {
-        display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 12px;
-        margin-top: 28px;
-      }
-
-      .static-card {
-        min-height: 150px;
-        border: 1px solid var(--fallback-line);
-        border-radius: 8px;
-        padding: 18px;
-        background: var(--fallback-panel);
-        backdrop-filter: blur(14px);
-      }
-
-      .static-card strong {
-        display: block;
-        color: var(--fallback-text);
-        font-family: var(--fallback-display);
-        font-size: 1.2rem;
-        font-weight: 400;
-      }
-
-      .static-card span {
-        display: block;
-        margin-top: 12px;
-        color: var(--fallback-muted);
-        line-height: 1.55;
-      }
-
-      .static-pipeline {
-        color: var(--fallback-muted);
-        font-family: var(--fallback-display);
-        font-size: clamp(1.2rem, 3vw, 2.2rem);
-      }
-
-      .static-footer {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 16px;
-        border-top: 1px solid rgba(210, 236, 255, 0.12);
-        padding-top: 20px;
-        color: var(--fallback-faint);
-      }
-
-      @keyframes shell-in {
-        from {
-          opacity: 0;
-          filter: blur(10px);
-          transform: translateY(8px);
-        }
-        to {
-          opacity: 1;
-          filter: blur(0);
-          transform: translateY(0);
-        }
-      }
-
-      @media (max-width: 840px) {
-        .static-header,
-        .static-footer {
-          align-items: flex-start;
-          flex-direction: column;
-          border-radius: 18px;
-        }
-
-        .static-hero,
-        .static-grid {
-          grid-template-columns: 1fr;
-        }
-
-        .static-globe {
-          order: -1;
-          width: min(310px, 86vw);
-        }
-
-        .static-nav {
-          justify-content: flex-start;
-        }
-      }
+      @keyframes boot-signal { to { width: 180px; opacity: 0.35; } }
+      @media (prefers-reduced-motion: reduce) { .signal-boot i { animation: none; } }
     </style>
   </head>
   <body>
     <div id="root">
-      <main class="static-site" aria-labelledby="static-title">
-        <header class="static-header">
-          <a class="static-brand" href="#top" aria-label="BoniStudio home">
-            <strong><span>B</span>oniStudio</strong>
-            <small>AI-native studio</small>
-          </a>
-          <nav class="static-nav" aria-label="Primary navigation">
-            <a href="#static-build">Build</a>
-            <a href="#static-projects">Projects</a>
-            <a href="#static-pipeline">Pipeline</a>
-            <a href="#static-contact">Contact</a>
-          </nav>
-        </header>
-
-        <section class="static-hero" id="top">
-          <div>
-            <p class="static-kicker">Holographic archive / live studio</p>
-            <h1 id="static-title"><span>B</span>oniStudio</h1>
-            <p>AI-native products, games, and interactive worlds.</p>
-          </div>
-          <div class="static-globe" aria-hidden="true"></div>
-        </section>
-
-        <section class="static-section" id="static-build">
-          <p class="static-label">What We Build</p>
-          <h2>Products, games, and spatial interfaces.</h2>
-          <div class="static-grid">
-            <article class="static-card"><strong>AI Products</strong><span>Useful workflows shaped by taste, models, and real users.</span></article>
-            <article class="static-card"><strong>Mobile Apps</strong><span>Focused tools with clear loops and tactile polish.</span></article>
-            <article class="static-card"><strong>Games</strong><span>Systems, prototypes, and expressive digital objects.</span></article>
-            <article class="static-card"><strong>Interactive Worlds</strong><span>Spatial archives, VR concepts, and living interfaces.</span></article>
-          </div>
-        </section>
-
-        <section class="static-section" id="static-projects">
-          <p class="static-label">Projects</p>
-          <h2>OvO Cyber Beads / AtMyTable / Space Station / BoniStudio Website</h2>
-        </section>
-
-        <section class="static-section" id="static-pipeline">
-          <p class="static-label">AI Pipeline</p>
-          <div class="static-pipeline">Idea -> GPT -> Claude -> Codex -> Build -> Deploy -> Users</div>
-        </section>
-
-        <footer class="static-footer" id="static-contact">
-          <span>Building the future, one product at a time.</span>
-          <a href="mailto:bonistudio.core@gmail.com">bonistudio.core@gmail.com</a>
-        </footer>
-      </main>
+      <div class="signal-boot" aria-label="Loading BoniStudio">
+        <strong>BONISTUDIO</strong>
+        <i aria-hidden="true"></i>
+      </div>
     </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

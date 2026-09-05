@@ -1,68 +1,51 @@
 # BoniStudio.red
 
-AI-native studio showcase built with React, TypeScript, Vite, React Three Fiber, Three.js, and Framer Motion.
+The interactive home of BoniStudio, an AI-native studio building products, games, and interactive worlds.
 
-## Run locally
+## Experience
+
+The site uses the **Signal Monolith** visual system: editorial typography, a restrained black/ceramic palette, live programmatic canvases, and voltage-lime/ultraviolet signals. Anime.js coordinates the opening sequence, section reveals, scroll-synced systems, and pointer response.
+
+Content is available in English and Simplified Chinese. Language choice persists locally and updates the document language, title, and description.
+
+## Development
 
 ```bash
 npm install
 npm run dev
 ```
 
-Vite serves the site at `http://127.0.0.1:5173/` by default.
-
-## Build
+The local site runs at `http://127.0.0.1:5173/`.
 
 ```bash
+npm run typecheck
 npm run build
 ```
 
-The production output is written to `dist/`.
+Production output is written to `dist/`.
 
-## Deploy
+## Deployment
 
-### Vercel
+Pushes to `main` are published through the GitHub Pages workflow in `.github/workflows/deploy.yml`. The custom domain is defined in `public/CNAME`.
 
-1. Import the repository in Vercel.
-2. Use the default Vite settings:
-   - Build command: `npm run build`
-   - Output directory: `dist`
-3. Deploy.
-
-### GitHub Pages
-
-This project is configured for the custom domain `bonistudio.red`, so Vite keeps `base: "/"`.
-
-```bash
-npm run build
-```
-
-The GitHub Actions workflow in `.github/workflows/deploy.yml` publishes `dist/` to GitHub Pages. The custom domain is declared in `public/CNAME`.
-
-## Project structure
+## Core structure
 
 ```text
 src/
   components/
-    Contact.tsx
-    HeroParticleScanner.tsx
-    InteractiveLab.tsx
-    PipelineGraph.tsx
-    ProjectCard.tsx
-    SectionTitle.tsx
-    Timeline.tsx
-  constants/
-    projects.ts
+    ExperimentField.tsx
+    Header.tsx
+    Hero.tsx
+    ProjectVisual.tsx
+    SignalField.tsx
+  hooks/
+    useSignalMotion.ts
+  i18n/
+    content.ts
   styles/
     global.css
+    signal.css
   App.tsx
-  main.tsx
 ```
 
-## Visual system
-
-- Hero particle scanner reconstructs an abstract 3D AI core with a moving scan line, additive particles, loading noise, and pointer response.
-- Project cards use archive-like metadata, hover scanning, status labels, and accent channels.
-- AI Pipeline, Interactive Lab, Timeline, and Contact are componentized for later expansion.
-- Mobile view reduces particle count and canvas DPR.
-- `prefers-reduced-motion` disables motion-heavy CSS and freezes the 3D scanner into a stable reconstructed state.
+The canvases are decorative and automatically reduce activity for compact screens, coarse pointers, hidden tabs, offscreen scenes, and `prefers-reduced-motion`.

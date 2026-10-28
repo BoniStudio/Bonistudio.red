@@ -4,9 +4,10 @@ export const languages = ['en', 'zh'] as const;
 
 export type Language = (typeof languages)[number];
 
-export type BuildAreaId = 'ai' | 'apps' | 'games' | 'worlds';
+export type BuildAreaId = 'ai' | 'apps' | 'systems' | 'games' | 'worlds';
 export type PipelineNodeId = 'idea' | 'gpt' | 'claude' | 'codex' | 'build' | 'deploy' | 'users';
 export type LabModuleId = 'scanner' | 'grid' | 'cursor' | 'archive';
+export type OperationsPreviewId = 'dashboard' | 'production' | 'delivery' | 'inventory' | 'schedule';
 
 export type BuildAreaContent = {
   id: BuildAreaId;
@@ -40,6 +41,64 @@ export type HeroStatContent = {
   label: string;
   value: string;
   tone: 'cyan' | 'lime' | 'purple' | 'amber' | 'white';
+};
+
+export type OperationsCaseStudyContent = {
+  cardCta: string;
+  eyebrow: string;
+  title: string;
+  subtitle: string;
+  overview: string;
+  challenge: {
+    eyebrow: string;
+    title: string;
+    copy: string;
+  };
+  solution: {
+    eyebrow: string;
+    title: string;
+    items: {
+      code: string;
+      title: string;
+      copy: string;
+    }[];
+  };
+  demo: {
+    eyebrow: string;
+    title: string;
+    copy: string;
+    ariaLabel: string;
+    disclaimer: string;
+    previews: {
+      id: OperationsPreviewId;
+      label: string;
+      detail: string;
+    }[];
+  };
+  results: {
+    eyebrow: string;
+    title: string;
+    copy: string;
+    metrics: {
+      value: string;
+      label: string;
+    }[];
+  };
+  role: {
+    eyebrow: string;
+    title: string;
+    items: string[];
+  };
+  stack: {
+    eyebrow: string;
+    title: string;
+    items: string[];
+  };
+  cta: {
+    eyebrow: string;
+    title: string;
+    label: string;
+  };
 };
 
 export type SiteContent = {
@@ -87,6 +146,9 @@ export type SiteContent = {
     copy: string;
     items: Project[];
   };
+  caseStudies: {
+    kitchenOperations: OperationsCaseStudyContent;
+  };
   pipeline: {
     eyebrow: string;
     title: string;
@@ -129,8 +191,8 @@ export const languageLabels: Record<Language, string> = {
 export const content: Record<Language, SiteContent> = {
   en: {
     meta: {
-      title: 'BoniStudio | AI-native products, games, and interactive worlds',
-      description: 'BoniStudio is an AI-native studio building products, games, and interactive worlds.',
+      title: 'BoniStudio | AI-native products, games, systems, and worlds',
+      description: 'BoniStudio is an AI-native studio building products, games, business systems, and interactive worlds.',
     },
     nav: {
       brand: 'BoniStudio',
@@ -150,7 +212,7 @@ export const content: Record<Language, SiteContent> = {
     hero: {
       kicker: 'AI-native studio / spatial archive',
       title: 'BoniStudio',
-      subtitle: 'AI-native products, games, and interactive worlds.',
+      subtitle: 'AI-native products, games, systems, and interactive worlds.',
       actionsLabel: 'Primary actions',
       primaryCta: 'Explore Projects',
       secondaryCta: 'View Lab',
@@ -165,7 +227,7 @@ export const content: Record<Language, SiteContent> = {
       stats: [
         { label: 'Studio', value: 'AI-native studio', tone: 'cyan' },
         { label: 'Base', value: 'Seattle x Global', tone: 'white' },
-        { label: 'Surface', value: 'Products / Games / Worlds', tone: 'purple' },
+        { label: 'Surface', value: 'Products / Games / Systems / Worlds', tone: 'purple' },
       ],
     },
     build: {
@@ -186,6 +248,12 @@ export const content: Record<Language, SiteContent> = {
           code: 'APP',
         },
         {
+          id: 'systems',
+          title: 'Business Systems',
+          copy: 'Operational platforms that connect teams, workflows, data, permissions, and field work across web and native apps.',
+          code: 'OPS',
+        },
+        {
           id: 'games',
           title: 'Games',
           copy: 'Play systems, progression ideas, mechanics prototypes, and expressive digital toys.',
@@ -201,8 +269,8 @@ export const content: Record<Language, SiteContent> = {
     },
     projects: {
       eyebrow: 'Projects',
-      title: 'An archive of shipped apps, prototypes, and long-range worlds.',
-      copy: 'Each project is treated like a living object: product logic, visual language, build system, and future memory.',
+      title: 'An archive of shipped apps, live systems, prototypes, and long-range worlds.',
+      copy: 'Each project is treated like a living object: product logic, operational reality, visual language, and build system grow together.',
       items: composeProjects([
         {
           id: 'ovoCyberBeads',
@@ -258,7 +326,101 @@ export const content: Record<Language, SiteContent> = {
           year: '2026',
           tags: ['Three.js', 'R3F', 'AI studio'],
         },
+        {
+          id: 'kitchenOperations',
+          title: 'Kitchen Operations Platform',
+          type: 'Business operations · Web + iOS',
+          description: 'A live operations platform connecting production, delivery, inventory, scheduling, and reporting across web, iPhone, and iPad.',
+          status: 'Live / In daily use',
+          year: '2026',
+          tags: ['Web + iOS', 'Operations', 'Multilingual'],
+        },
       ]),
+    },
+    caseStudies: {
+      kitchenOperations: {
+        cardCta: 'View full case study',
+        eyebrow: 'Delivered platform / 2026',
+        title: 'Kitchen Operations Platform',
+        subtitle: 'An all-in-one operations platform for a rice-ball food producer · Web + iOS',
+        overview: 'Built for a West Coast rice-ball food producer with central kitchens in Seattle and San Jose, this platform consolidates production, delivery, inventory, scheduling, and reporting into one shared system across the web, iPhone, and iPad.',
+        challenge: {
+          eyebrow: '01 / The challenge',
+          title: 'One operation, scattered across spreadsheets, chats, and disconnected files.',
+          copy: 'Production plans and orders lived in separate spreadsheets. Deliveries and shifts were coordinated through group chats, while inventory and reports each had their own files. A multilingual, fast-changing kitchen team needed one simple, role-aware view of the operation.',
+        },
+        solution: {
+          eyebrow: '02 / The system',
+          title: 'A shared operational layer that works with the team already in place.',
+          items: [
+            {
+              code: 'SYNC',
+              title: 'Validated sheet sync',
+              copy: 'Hourly sync with the team’s existing Google Sheets, with automatic validation before data enters the system.',
+            },
+            {
+              code: 'MAKE',
+              title: 'Production control',
+              copy: 'Daily planning, actual-output confirmation, and shared kitchen views keep production aligned.',
+            },
+            {
+              code: 'ROUTE',
+              title: 'Delivery workflow',
+              copy: 'Organized stops, one-tap navigation, driver assignment, and photo proof of delivery.',
+            },
+            {
+              code: 'STOCK',
+              title: 'Inventory signal',
+              copy: 'Physical counts, low-stock alerts, purchase references, and manager-controlled item maintenance.',
+            },
+            {
+              code: 'ACCESS',
+              title: 'Role-aware access',
+              copy: 'Kitchen and role permissions across English, Japanese, and Spanish interfaces.',
+            },
+          ],
+        },
+        demo: {
+          eyebrow: '03 / Representative interface',
+          title: 'A five-surface view of the operation.',
+          copy: 'These programmatic demo views show the system architecture without exposing customer orders, employees, locations, or internal data.',
+          ariaLabel: 'Select a representative operations module',
+          disclaimer: 'Demo interface / representative system view',
+          previews: [
+            { id: 'dashboard', label: 'Dashboard', detail: 'Daily production, delivery, inventory alerts, and open tasks in one operational view.' },
+            { id: 'production', label: 'Production', detail: 'Plans and confirmed output organized by day, kitchen, and product line.' },
+            { id: 'delivery', label: 'Delivery', detail: 'Ordered stops, driver assignments, navigation handoff, and delivery confirmation.' },
+            { id: 'inventory', label: 'Inventory', detail: 'Counts, low-stock signals, and manager-maintained purchasing references.' },
+            { id: 'schedule', label: 'Schedule', detail: 'Role-ordered shifts, reusable weekly patterns, and shared kitchen visibility.' },
+          ],
+        },
+        results: {
+          eyebrow: '04 / Live result',
+          title: 'A shipped system in daily operational use.',
+          copy: 'Now used daily across two kitchens by about 15 staff, covering nine operational modules. The native iOS app passed Apple review for unlisted distribution in October 2026.',
+          metrics: [
+            { value: '2', label: 'Central kitchens' },
+            { value: '~15', label: 'Daily users' },
+            { value: '9', label: 'Operational modules' },
+            { value: '3', label: 'Interface languages' },
+          ],
+        },
+        role: {
+          eyebrow: '05 / Our role',
+          title: 'From workflow discovery to launch and ongoing support.',
+          items: ['Product strategy', 'UI/UX design', 'Full-stack development', 'Native iOS development', 'Cloud deployment', 'App Store release', 'Ongoing support'],
+        },
+        stack: {
+          eyebrow: '06 / System stack',
+          title: 'Built for secure, multilingual, cross-platform operations.',
+          items: ['React', 'TypeScript', 'Cloudflare Workers', 'D1', 'Auth0', 'SwiftUI', 'Google Sheets', 'AI-assisted development'],
+        },
+        cta: {
+          eyebrow: 'Need a system that matches how your team actually works?',
+          title: 'Turn the operational mess into one clear product surface.',
+          label: 'Start a similar project',
+        },
+      },
     },
     pipeline: {
       eyebrow: 'AI Pipeline',
@@ -284,16 +446,16 @@ export const content: Record<Language, SiteContent> = {
         { id: 'scanner', title: 'Particle Scanner', label: 'object reconstruction', metric: '5.6k particles' },
         { id: 'grid', title: 'Neural Grid', label: 'latent routing map', metric: '42 nodes' },
         { id: 'cursor', title: 'Anomalous Matter', label: 'organic data core', metric: 'live mesh' },
-        { id: 'archive', title: 'Product Archive', label: 'interactive index', metric: '6 records' },
+        { id: 'archive', title: 'Product Archive', label: 'interactive index', metric: '7 records' },
       ],
-      archiveItems: ['OvO', 'AMT', 'SLA', 'VR', 'HCP', 'BNS'],
+      archiveItems: ['OvO', 'AMT', 'SLA', 'VR', 'HCP', 'BNS', 'OPS'],
     },
     timeline: {
       eyebrow: 'Timeline',
       title: 'The studio grows as an archive, not a pitch deck.',
       items: [
         { year: '2026', title: 'BoniStudio founded', detail: 'A small AI-native studio begins building in public.' },
-        { year: '2026', title: 'First apps shipped', detail: 'Early mobile and creative product experiments leave the lab.' },
+        { year: '2026', title: 'Apps and operations platform shipped', detail: 'Mobile products and a live multi-platform operations system leave the lab.' },
         { year: '2026', title: 'AI-native workflow established', detail: 'GPT, Claude, Codex, and human direction become one production loop.' },
         { year: '2027', title: 'VR prototype target', detail: 'Space Station systems move toward a playable spatial prototype.' },
         { year: 'Future', title: 'Interactive worlds and AI products', detail: 'The archive expands into richer products, games, and living interfaces.' },
@@ -301,7 +463,7 @@ export const content: Record<Language, SiteContent> = {
     },
     contact: {
       eyebrow: 'Contact',
-      title: 'Open channel for products, games, and AI-built worlds.',
+      title: 'Open channel for products, games, business systems, and AI-built worlds.',
       emailLabel: 'Email BoniStudio',
       githubLabel: 'GitHub',
       socialLabel: 'Social',
@@ -314,8 +476,8 @@ export const content: Record<Language, SiteContent> = {
   },
   zh: {
     meta: {
-      title: 'BoniStudio | AI 原生产品、游戏与互动世界',
-      description: 'BoniStudio 是一家构建 AI 原生产品、游戏与互动世界的创作工作室。',
+      title: 'BoniStudio | AI 原生产品、游戏、企业系统与互动世界',
+      description: 'BoniStudio 是一家构建 AI 原生产品、游戏、企业业务系统与互动世界的创作工作室。',
     },
     nav: {
       brand: 'BoniStudio',
@@ -335,7 +497,7 @@ export const content: Record<Language, SiteContent> = {
     hero: {
       kicker: 'AI 原生工作室 / 空间档案',
       title: 'BoniStudio',
-      subtitle: 'AI 原生产品、游戏与互动世界。',
+      subtitle: 'AI 原生产品、游戏、企业系统与互动世界。',
       actionsLabel: '主要操作',
       primaryCta: '查看项目',
       secondaryCta: '进入实验室',
@@ -350,7 +512,7 @@ export const content: Record<Language, SiteContent> = {
       stats: [
         { label: '工作室', value: 'AI 原生工作室', tone: 'cyan' },
         { label: '坐标', value: 'Seattle x Global', tone: 'white' },
-        { label: '方向', value: '产品 / 游戏 / 互动世界', tone: 'purple' },
+        { label: '方向', value: '产品 / 游戏 / 企业系统 / 互动世界', tone: 'purple' },
       ],
     },
     build: {
@@ -371,6 +533,12 @@ export const content: Record<Language, SiteContent> = {
           code: 'APP',
         },
         {
+          id: 'systems',
+          title: '企业业务系统',
+          copy: '打造连接团队、流程、数据、权限与现场工作的运营平台，覆盖网页与原生应用。',
+          code: 'OPS',
+        },
+        {
           id: 'games',
           title: '游戏',
           copy: '探索玩法系统、成长曲线、机制原型和有表达感的数字玩具。',
@@ -386,8 +554,8 @@ export const content: Record<Language, SiteContent> = {
     },
     projects: {
       eyebrow: '项目',
-      title: '收录已发布应用、原型和长期世界项目的档案。',
-      copy: '每个项目都被当作一个活的对象来处理：产品逻辑、视觉语言、构建系统和未来记忆一起生长。',
+      title: '收录已发布应用、真实运营系统、原型和长期世界项目的档案。',
+      copy: '每个项目都被当作一个活的对象来处理：产品逻辑、运营现实、视觉语言和构建系统一起生长。',
       items: composeProjects([
         {
           id: 'ovoCyberBeads',
@@ -443,7 +611,101 @@ export const content: Record<Language, SiteContent> = {
           year: '2026',
           tags: ['Three.js', 'R3F', 'AI 工作室'],
         },
+        {
+          id: 'kitchenOperations',
+          title: '食品运营平台',
+          type: '企业运营系统 · Web + iOS',
+          description: '一套已投入日常使用的运营平台，把生产、配送、库存、排班与报表连接到网页、iPhone 与 iPad。',
+          status: '已上线 / 日常使用',
+          year: '2026',
+          tags: ['Web + iOS', '运营系统', '多语言'],
+        },
       ]),
+    },
+    caseStudies: {
+      kitchenOperations: {
+        cardCta: '查看完整案例',
+        eyebrow: '已交付平台 / 2026',
+        title: '食品运营平台',
+        subtitle: '为饭团食品企业打造的一体化运营平台 · 网页 + iOS',
+        overview: '这套平台服务于一家在西雅图和圣何塞设有中央厨房的美国西海岸饭团食品企业，把生产、配送、库存、排班和报表集中到同一个系统，并在网页、iPhone 与 iPad 之间共享实时数据。',
+        challenge: {
+          eyebrow: '01 / 挑战',
+          title: '同一套业务，被分散在表格、群聊和彼此孤立的文件里。',
+          copy: '生产计划和订单分散在多份表格里，配送与排班依赖群聊协调，库存和报表各自使用不同文件。面对多语言、人员变化快的厨房团队，管理层缺少一个简单、按角色区分的全局视图。',
+        },
+        solution: {
+          eyebrow: '02 / 系统方案',
+          title: '不打断现有团队节奏，建立一层共享的运营系统。',
+          items: [
+            {
+              code: 'SYNC',
+              title: '表格同步与校验',
+              copy: '每小时同步团队现有的 Google 表格，并在数据进入系统前自动完成一致性校验。',
+            },
+            {
+              code: 'MAKE',
+              title: '生产控制',
+              copy: '把每日计划、实际产量确认和厨房共享视图连接在同一个生产流程中。',
+            },
+            {
+              code: 'ROUTE',
+              title: '配送工作流',
+              copy: '自动整理站点、指派司机、一键导航，并通过照片完成送达确认。',
+            },
+            {
+              code: 'STOCK',
+              title: '库存信号',
+              copy: '实物盘点、低库存预警、采购参考，以及管理层自助维护品目。',
+            },
+            {
+              code: 'ACCESS',
+              title: '角色化权限',
+              copy: '按厨房与岗位隔离数据，并提供英语、日语和西班牙语界面。',
+            },
+          ],
+        },
+        demo: {
+          eyebrow: '03 / 代表性界面',
+          title: '用五个系统表面，看见整套运营。',
+          copy: '以下程序化演示界面只表达系统结构，不包含客户订单、员工、地点或任何内部数据。',
+          ariaLabel: '选择一个运营模块的代表性界面',
+          disclaimer: '演示界面 / 代表性系统视图',
+          previews: [
+            { id: 'dashboard', label: '总览', detail: '把当天生产、配送、库存预警和未完成事项汇总为一个运营视图。' },
+            { id: 'production', label: '生产', detail: '按日期、厨房和产品线组织计划与实际产量确认。' },
+            { id: 'delivery', label: '配送', detail: '整合站点顺序、司机指派、导航交接和送达确认。' },
+            { id: 'inventory', label: '库存', detail: '集中显示盘点、低库存信号和管理层维护的采购参考。' },
+            { id: 'schedule', label: '排班', detail: '按岗位组织班次、复用每周模板，并适配厨房共享设备。' },
+          ],
+        },
+        results: {
+          eyebrow: '04 / 上线成果',
+          title: '一套已经进入日常运营的交付系统。',
+          copy: '目前已在两间厨房投入日常使用，覆盖约 15 名员工和 9 个业务模块。原生 iOS App 于 2026 年 10 月通过 Apple 审核，以非公开方式分发。',
+          metrics: [
+            { value: '2', label: '中央厨房' },
+            { value: '约 15', label: '日常使用者' },
+            { value: '9', label: '业务模块' },
+            { value: '3', label: '界面语言' },
+          ],
+        },
+        role: {
+          eyebrow: '05 / 我们的工作',
+          title: '从流程梳理，到上线，再到持续运维。',
+          items: ['产品规划', 'UI/UX 设计', '全栈开发', '原生 iOS 开发', '云端部署', 'App Store 上架', '持续运维'],
+        },
+        stack: {
+          eyebrow: '06 / 技术系统',
+          title: '为安全、多语言与跨端运营而构建。',
+          items: ['React', 'TypeScript', 'Cloudflare Workers', 'D1', 'Auth0', 'SwiftUI', 'Google Sheets', 'AI 辅助开发'],
+        },
+        cta: {
+          eyebrow: '你的团队也在用表格和群聊拼接业务吗？',
+          title: '把混乱的运营流程，变成一套清晰的产品界面。',
+          label: '联系我们打造类似系统',
+        },
+      },
     },
     pipeline: {
       eyebrow: 'AI 流程',
@@ -469,16 +731,16 @@ export const content: Record<Language, SiteContent> = {
         { id: 'scanner', title: '粒子扫描器', label: '对象重构', metric: '5.6k 粒子' },
         { id: 'grid', title: '神经网格', label: '潜空间路由图', metric: '42 节点' },
         { id: 'cursor', title: '异常物质', label: '有机数据核心', metric: '实时网格' },
-        { id: 'archive', title: '产品档案', label: '互动索引', metric: '6 条记录' },
+        { id: 'archive', title: '产品档案', label: '互动索引', metric: '7 条记录' },
       ],
-      archiveItems: ['OvO', 'AMT', 'SLA', 'VR', 'HCP', 'BNS'],
+      archiveItems: ['OvO', 'AMT', 'SLA', 'VR', 'HCP', 'BNS', 'OPS'],
     },
     timeline: {
       eyebrow: '时间线',
       title: '工作室会像档案一样生长，而不是像演示稿一样结束。',
       items: [
         { year: '2026', title: 'BoniStudio 成立', detail: '一个小型 AI 原生工作室开始公开构建。' },
-        { year: '2026', title: '第一批应用上线', detail: '早期移动端与创意产品实验离开实验室。' },
+        { year: '2026', title: '应用与运营平台上线', detail: '移动产品与一套投入日常使用的跨端运营系统离开实验室。' },
         { year: '2026', title: 'AI 原生工作流成型', detail: 'GPT、Claude、Codex 和人的方向感变成同一个生产循环。' },
         { year: '2027', title: 'VR 原型目标', detail: 'Space Station 系统朝可玩的空间原型推进。' },
         { year: '未来', title: '互动世界与 AI 产品', detail: '档案继续扩展为更丰富的产品、游戏和活的界面。' },
@@ -486,7 +748,7 @@ export const content: Record<Language, SiteContent> = {
     },
     contact: {
       eyebrow: '联系',
-      title: '为产品、游戏和 AI 构建的世界保持开放通道。',
+      title: '为产品、游戏、企业系统和 AI 构建的世界保持开放通道。',
       emailLabel: '给 BoniStudio 发邮件',
       githubLabel: 'GitHub',
       socialLabel: '社交',

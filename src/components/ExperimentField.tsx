@@ -38,7 +38,7 @@ type DrawState = {
 };
 
 const TAU = Math.PI * 2;
-const archiveCodes = ['OVO', 'AMT', 'SLA', 'SSV', 'HCP', 'BNS'];
+const archiveCodes = ['OVO', 'AMT', 'SLA', 'SSV', 'HCP', 'BNS', 'OPS'];
 
 function clamp(value: number, minimum: number, maximum: number) {
   return Math.min(maximum, Math.max(minimum, value));

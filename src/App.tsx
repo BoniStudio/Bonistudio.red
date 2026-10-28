@@ -1,4 +1,5 @@
 import {
+  ArrowDownRight,
   ArrowLeft,
   ArrowRight,
   ArrowUp,
@@ -11,6 +12,7 @@ import { useEffect, useMemo, useRef, useState, type CSSProperties, type Keyboard
 import { ExperimentField } from './components/ExperimentField';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
+import { OperationsCaseStudy } from './components/OperationsCaseStudy';
 import { ProjectVisual } from './components/ProjectVisual';
 import { useSignalMotion } from './hooks/useSignalMotion';
 import {
@@ -76,6 +78,7 @@ function App() {
   const isCompact = useCompactViewport();
   const pageRoot = useRef<HTMLDivElement>(null);
   const siteContent = content[language];
+  const projectTotal = siteContent.projects.items.length;
   const selectedBuild = siteContent.build.areas.find((area) => area.id === activeBuild) ?? siteContent.build.areas[0];
   const selectedProject = siteContent.projects.items[activeProject];
   const selectedLab = siteContent.lab.modules.find((module) => module.id === activeLab) ?? siteContent.lab.modules[0];
@@ -83,7 +86,7 @@ function App() {
   const ui = useMemo(() => language === 'zh' ? {
     skip: '跳到主要内容',
     capabilitySignal: '当前能力信号',
-    projectCount: '06 个持续进化的项目对象',
+    projectCount: `${projectTotal} 个持续进化的项目对象`,
     previous: '上一个项目',
     next: '下一个项目',
     selectProject: '选择项目',
@@ -99,7 +102,7 @@ function App() {
   } : {
     skip: 'Skip to main content',
     capabilitySignal: 'Active capability signal',
-    projectCount: '06 evolving project objects',
+    projectCount: `${projectTotal} evolving project objects`,
     previous: 'Previous project',
     next: 'Next project',
     selectProject: 'Select project',
@@ -112,9 +115,23 @@ function App() {
     archive: 'Product archive',
     live: 'Live system',
     top: 'Back to top',
-  }, [language]);
+  }, [language, projectTotal]);
 
   useSignalMotion(pageRoot, language);
+
+  useEffect(() => {
+    const hash = window.location.hash.slice(1);
+    if (!hash) return;
+
+    const target = document.getElementById(hash);
+    if (!target) return;
+
+    const frame = window.requestAnimationFrame(() => {
+      target.scrollIntoView({ block: 'start' });
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
 
   useEffect(() => {
     document.documentElement.lang = language === 'zh' ? 'zh-CN' : 'en';
@@ -190,7 +207,7 @@ function App() {
             <div className={`capability-visual capability-visual--${selectedBuild.id}`} data-reveal-item aria-live="polite">
               <div className="capability-visual__hud">
                 <span>{ui.capabilitySignal}</span>
-                <span>0{siteContent.build.areas.findIndex((area) => area.id === selectedBuild.id) + 1} / 04</span>
+                <span>0{siteContent.build.areas.findIndex((area) => area.id === selectedBuild.id) + 1} / {String(siteContent.build.areas.length).padStart(2, '0')}</span>
               </div>
               <div className="capability-visual__core" aria-hidden="true">
                 <i /><i /><i /><i />
@@ -256,12 +273,18 @@ function App() {
                 <ul aria-label={language === 'zh' ? '项目标签' : 'Project tags'}>
                   {selectedProject.tags.map((tag) => <li key={tag}>{tag}</li>)}
                 </ul>
+                {selectedProject.id === 'kitchenOperations' && (
+                  <a className="project-stage__case-link" href="#kitchen-operations">
+                    {siteContent.caseStudies.kitchenOperations.cardCta}
+                    <ArrowDownRight aria-hidden="true" />
+                  </a>
+                )}
               </div>
               <div className="project-stage__controls">
                 <button type="button" onClick={() => changeProject(-1)} aria-label={ui.previous}>
                   <ArrowLeft aria-hidden="true" />
                 </button>
-                <div><span>{String(activeProject + 1).padStart(2, '0')}</span><i /><span>06</span></div>
+                <div><span>{String(activeProject + 1).padStart(2, '0')}</span><i /><span>{String(projectTotal).padStart(2, '0')}</span></div>
                 <button type="button" onClick={() => changeProject(1)} aria-label={ui.next}>
                   <ArrowRight aria-hidden="true" />
                 </button>
@@ -269,6 +292,8 @@ function App() {
             </article>
           </div>
         </section>
+
+        <OperationsCaseStudy content={siteContent.caseStudies.kitchenOperations} language={language} />
 
         <section className="pipeline-system signal-section" id="pipeline" data-reveal-section>
           <SectionIntro

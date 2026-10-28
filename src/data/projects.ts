@@ -5,10 +5,11 @@ export const projectIds = [
   'spaceStationVr',
   'hcPetFashion',
   'bonistudioWebsite',
+  'kitchenOperations',
 ] as const;
 
 export type ProjectId = (typeof projectIds)[number];
-export type ProjectAccent = 'cyan' | 'amber' | 'purple' | 'lime' | 'white';
+export type ProjectAccent = 'cyan' | 'amber' | 'purple' | 'lime' | 'mint' | 'white';
 
 export type ProjectMeta = {
   id: ProjectId;
@@ -68,6 +69,12 @@ export const projectMeta: Record<ProjectId, ProjectMeta> = {
     id: 'bonistudioWebsite',
     signal: 'BNS-06',
     accent: 'white',
+    span: 'wide',
+  },
+  kitchenOperations: {
+    id: 'kitchenOperations',
+    signal: 'OPS-07',
+    accent: 'mint',
     span: 'wide',
   },
 };

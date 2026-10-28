@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react';
 import type { Project, ProjectId } from '../data/projects';
 
 type ProjectVisualProps = {
@@ -16,6 +17,8 @@ const warpThreads = Array.from({ length: 13 }, (_, index) => index);
 const weftThreads = Array.from({ length: 9 }, (_, index) => index);
 const recursiveFrames = Array.from({ length: 5 }, (_, index) => index);
 const interfaceLines = Array.from({ length: 6 }, (_, index) => index);
+const operationModules = ['dashboard', 'production', 'delivery', 'inventory', 'schedule'] as const;
+const operationRows = Array.from({ length: 6 }, (_, index) => index);
 
 const projectModifiers: Record<ProjectId, string> = {
   ovoCyberBeads: 'pixel-grid',
@@ -24,6 +27,7 @@ const projectModifiers: Record<ProjectId, string> = {
   spaceStationVr: 'station-dock',
   hcPetFashion: 'textile-weave',
   bonistudioWebsite: 'recursive-interface',
+  kitchenOperations: 'operations-matrix',
 };
 
 function PixelGridVisual() {
@@ -163,6 +167,35 @@ function RecursiveInterfaceVisual() {
   );
 }
 
+function OperationsMatrixVisual() {
+  return (
+    <div className="project-visual__scene project-visual__scene--operations-matrix">
+      <div className="project-visual__ops-bus" />
+      <div className="project-visual__ops-console">
+        <span className="project-visual__ops-header" />
+        <span className="project-visual__ops-sidebar" />
+        <div className="project-visual__ops-kpis"><i /><i /><i /></div>
+        <div className="project-visual__ops-rows">
+          {operationRows.map((row) => <i data-row={row} key={row} />)}
+        </div>
+      </div>
+      <div className="project-visual__ops-modules">
+        {operationModules.map((module, index) => (
+          <span
+            className="project-visual__ops-module"
+            data-module={module}
+            style={{ '--i': index } as CSSProperties}
+            key={module}
+          >
+            <i /><b /><em />
+          </span>
+        ))}
+      </div>
+      <span className="project-visual__ops-pulse" />
+    </div>
+  );
+}
+
 function getProjectScene(projectId: ProjectId) {
   switch (projectId) {
     case 'ovoCyberBeads':
@@ -177,6 +210,8 @@ function getProjectScene(projectId: ProjectId) {
       return <TextileWeaveVisual />;
     case 'bonistudioWebsite':
       return <RecursiveInterfaceVisual />;
+    case 'kitchenOperations':
+      return <OperationsMatrixVisual />;
   }
 }
 

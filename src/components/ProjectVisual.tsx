@@ -170,6 +170,10 @@ function RecursiveInterfaceVisual() {
 function OperationsMatrixVisual() {
   return (
     <div className="project-visual__scene project-visual__scene--operations-matrix">
+      <div className="project-visual__ops-client">
+        <img src="/clients/onigiri-sen-symbol.png" alt="" />
+        <span>ONIGIRI SEN</span>
+      </div>
       <div className="project-visual__ops-bus" />
       <div className="project-visual__ops-console">
         <span className="project-visual__ops-header" />

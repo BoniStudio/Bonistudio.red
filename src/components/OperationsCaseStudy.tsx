@@ -44,6 +44,17 @@ export function OperationsCaseStudy({ content, language }: OperationsCaseStudyPr
           <span><i /> LIVE SYSTEM</span>
           <span>SEATTLE ↔ SAN JOSE</span>
         </div>
+        <div className="case-study-client" data-reveal-item>
+          <div className="case-study-client__studio">
+            <span>BONISTUDIO</span>
+            <small>{content.client.label}</small>
+          </div>
+          <b aria-hidden="true">×</b>
+          <div className="case-study-client__brand">
+            <img src={content.client.logoSrc} alt={content.client.logoAlt} />
+            <strong>{content.client.name}</strong>
+          </div>
+        </div>
         <h2 id="operations-case-title" data-reveal-item>{content.title}</h2>
         <p data-reveal-item>{content.subtitle}</p>
         <div className="case-study-hero__overview" data-reveal-item>

@@ -8,6 +8,7 @@ export type BuildAreaId = 'ai' | 'apps' | 'systems' | 'games' | 'worlds';
 export type PipelineNodeId = 'idea' | 'gpt' | 'claude' | 'codex' | 'build' | 'deploy' | 'users';
 export type LabModuleId = 'scanner' | 'grid' | 'cursor' | 'archive';
 export type OperationsPreviewId = 'dashboard' | 'production' | 'delivery' | 'inventory' | 'schedule';
+export type HeroSurfaceId = 'products' | 'games' | 'systems' | 'worlds';
 
 export type BuildAreaContent = {
   id: BuildAreaId;
@@ -45,6 +46,12 @@ export type HeroStatContent = {
 
 export type OperationsCaseStudyContent = {
   cardCta: string;
+  client: {
+    label: string;
+    name: string;
+    logoSrc: string;
+    logoAlt: string;
+  };
   eyebrow: string;
   title: string;
   subtitle: string;
@@ -131,6 +138,21 @@ export type SiteContent = {
     telemetryRight: {
       label: string;
       value: string;
+    };
+    engine: {
+      ariaLabel: string;
+      eyebrow: string;
+      coreLabel: string;
+      coreStatus: string;
+      status: string;
+      output: string;
+      surfaces: {
+        id: HeroSurfaceId;
+        title: string;
+        detail: string;
+        signal: string;
+        href: string;
+      }[];
     };
     stats: HeroStatContent[];
   };
@@ -223,6 +245,20 @@ export const content: Record<Language, SiteContent> = {
       telemetryRight: {
         label: 'signal 06',
         value: 'AI-native studio',
+      },
+      engine: {
+        ariaLabel: 'BoniStudio creation engine and four output surfaces',
+        eyebrow: 'Creation engine / live',
+        coreLabel: 'AI core',
+        coreStatus: 'Human-directed',
+        status: 'One studio / four surfaces',
+        output: 'Real products out',
+        surfaces: [
+          { id: 'products', title: 'Products', detail: 'Apps · tools · workflows', signal: 'SHIP / APP', href: '#projects' },
+          { id: 'games', title: 'Games', detail: 'Mechanics · play · systems', signal: 'PLAY / LOOP', href: '#projects' },
+          { id: 'systems', title: 'Systems', detail: 'Onigiri Sen · live operations', signal: 'LIVE / OPS', href: '#kitchen-operations' },
+          { id: 'worlds', title: 'Worlds', detail: 'Spatial · VR · archives', signal: 'ENTER / XR', href: '#lab' },
+        ],
       },
       stats: [
         { label: 'Studio', value: 'AI-native studio', tone: 'cyan' },
@@ -328,22 +364,28 @@ export const content: Record<Language, SiteContent> = {
         },
         {
           id: 'kitchenOperations',
-          title: 'Kitchen Operations Platform',
+          title: 'Onigiri Sen Operations',
           type: 'Business operations · Web + iOS',
-          description: 'A live operations platform connecting production, delivery, inventory, scheduling, and reporting across web, iPhone, and iPad.',
+          description: 'A live platform built with Onigiri Sen, connecting production, delivery, inventory, scheduling, and reporting across web, iPhone, and iPad.',
           status: 'Live / In daily use',
           year: '2026',
-          tags: ['Web + iOS', 'Operations', 'Multilingual'],
+          tags: ['Onigiri Sen', 'Web + iOS', 'Operations'],
         },
       ]),
     },
     caseStudies: {
       kitchenOperations: {
         cardCta: 'View full case study',
+        client: {
+          label: 'Client collaboration',
+          name: 'Onigiri Sen',
+          logoSrc: '/clients/onigiri-sen-symbol.png',
+          logoAlt: 'Onigiri Sen brand symbol',
+        },
         eyebrow: 'Delivered platform / 2026',
-        title: 'Kitchen Operations Platform',
-        subtitle: 'An all-in-one operations platform for a rice-ball food producer · Web + iOS',
-        overview: 'Built for a West Coast rice-ball food producer with central kitchens in Seattle and San Jose, this platform consolidates production, delivery, inventory, scheduling, and reporting into one shared system across the web, iPhone, and iPad.',
+        title: 'Onigiri Sen Operations',
+        subtitle: 'BoniStudio × Onigiri Sen · An all-in-one operations platform · Web + iOS',
+        overview: 'BoniStudio designed and built Onigiri Sen Operations for Onigiri Sen, a West Coast rice-ball food producer with central kitchens in Seattle and San Jose. The platform consolidates production, delivery, inventory, scheduling, and reporting into one shared system across the web, iPhone, and iPad.',
         challenge: {
           eyebrow: '01 / The challenge',
           title: 'One operation, scattered across spreadsheets, chats, and disconnected files.',
@@ -509,6 +551,20 @@ export const content: Record<Language, SiteContent> = {
         label: '信号 06',
         value: 'AI 原生工作室',
       },
+      engine: {
+        ariaLabel: 'BoniStudio 创造引擎与四个产品输出面',
+        eyebrow: '创造引擎 / 在线',
+        coreLabel: 'AI 核心',
+        coreStatus: '由人主导',
+        status: '一个工作室 / 四种产品表面',
+        output: '真实产品持续上线',
+        surfaces: [
+          { id: 'products', title: '产品', detail: '应用 · 工具 · 工作流', signal: 'SHIP / APP', href: '#projects' },
+          { id: 'games', title: '游戏', detail: '机制 · 玩法 · 系统', signal: 'PLAY / LOOP', href: '#projects' },
+          { id: 'systems', title: '企业系统', detail: 'Onigiri Sen · 日常运营', signal: 'LIVE / OPS', href: '#kitchen-operations' },
+          { id: 'worlds', title: '互动世界', detail: '空间 · VR · 档案', signal: 'ENTER / XR', href: '#lab' },
+        ],
+      },
       stats: [
         { label: '工作室', value: 'AI 原生工作室', tone: 'cyan' },
         { label: '坐标', value: 'Seattle x Global', tone: 'white' },
@@ -613,22 +669,28 @@ export const content: Record<Language, SiteContent> = {
         },
         {
           id: 'kitchenOperations',
-          title: '食品运营平台',
+          title: 'Onigiri Sen Operations',
           type: '企业运营系统 · Web + iOS',
-          description: '一套已投入日常使用的运营平台，把生产、配送、库存、排班与报表连接到网页、iPhone 与 iPad。',
+          description: 'BoniStudio 与 Onigiri Sen 联合交付的日常运营平台，把生产、配送、库存、排班与报表连接到网页、iPhone 与 iPad。',
           status: '已上线 / 日常使用',
           year: '2026',
-          tags: ['Web + iOS', '运营系统', '多语言'],
+          tags: ['Onigiri Sen', 'Web + iOS', '运营系统'],
         },
       ]),
     },
     caseStudies: {
       kitchenOperations: {
         cardCta: '查看完整案例',
+        client: {
+          label: '客户联合项目',
+          name: 'Onigiri Sen',
+          logoSrc: '/clients/onigiri-sen-symbol.png',
+          logoAlt: 'Onigiri Sen 品牌符号',
+        },
         eyebrow: '已交付平台 / 2026',
-        title: '食品运营平台',
-        subtitle: '为饭团食品企业打造的一体化运营平台 · 网页 + iOS',
-        overview: '这套平台服务于一家在西雅图和圣何塞设有中央厨房的美国西海岸饭团食品企业，把生产、配送、库存、排班和报表集中到同一个系统，并在网页、iPhone 与 iPad 之间共享实时数据。',
+        title: 'Onigiri Sen Operations',
+        subtitle: 'BoniStudio × Onigiri Sen · 一体化运营平台 · 网页 + iOS',
+        overview: 'BoniStudio 为 Onigiri Sen 设计并开发了 Onigiri Sen Operations。客户在西雅图和圣何塞设有中央厨房，这套平台把生产、配送、库存、排班和报表集中到同一个系统，并在网页、iPhone 与 iPad 之间共享实时数据。',
         challenge: {
           eyebrow: '01 / 挑战',
           title: '同一套业务，被分散在表格、群聊和彼此孤立的文件里。',

@@ -3,6 +3,7 @@ import { createScope, createTimeline, stagger } from 'animejs';
 import { useEffect, useRef } from 'react';
 import type { SiteContent } from '../i18n/content';
 import { SignalField } from './SignalField';
+import { StudioSystemMap } from './StudioSystemMap';
 
 type HeroProps = {
   content: SiteContent['hero'];
@@ -31,6 +32,23 @@ export function Hero({ content, isCompact }: HeroProps) {
           duration: 1050,
           delay: stagger(38),
         }, 120)
+        .add('[data-system-link]', {
+          opacity: [0, 0.7],
+          strokeDashoffset: [120, 0],
+          duration: 1050,
+          delay: stagger(90),
+        }, 240)
+        .add('[data-system-node]', {
+          opacity: [0, 1],
+          scale: [0.82, 1],
+          duration: 820,
+          delay: stagger(100),
+        }, 360)
+        .add('[data-system-core]', {
+          opacity: [0, 1],
+          scale: [0.72, 1],
+          duration: 920,
+        }, 540)
         .add('[data-hero-copy]', {
           y: [22, 0],
           opacity: [0, 1],
@@ -58,17 +76,28 @@ export function Hero({ content, isCompact }: HeroProps) {
         <span>{isCompact ? 'BNS / 2026' : 'Seattle — Global / est. 2026'}</span>
       </div>
 
-      <h1 className="signal-hero__title" aria-label={content.title}>
-        {titleRows.map((word) => (
-          <span className="signal-hero__word" key={word}>
-            {Array.from(word).map((character, index) => (
-              <span data-title-char aria-hidden="true" key={`${character}-${index}`}>
-                {character}
+      <div className="signal-hero__stage">
+        <div className="signal-hero__identity">
+          <h1 className="signal-hero__title" aria-label={content.title}>
+            {titleRows.map((word) => (
+              <span className="signal-hero__word" key={word}>
+                {Array.from(word).map((character, index) => (
+                  <span data-title-char aria-hidden="true" key={`${character}-${index}`}>
+                    {character}
+                  </span>
+                ))}
               </span>
             ))}
-          </span>
-        ))}
-      </h1>
+          </h1>
+          <div className="signal-hero__manifest" data-hero-copy aria-hidden="true">
+            <span>AI AT THE CORE</span>
+            <i />
+            <span>REAL PRODUCTS OUT</span>
+          </div>
+        </div>
+
+        <StudioSystemMap content={content.engine} />
+      </div>
 
       <div className="signal-hero__rail" aria-hidden="true" />
 

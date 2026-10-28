@@ -126,11 +126,28 @@ function App() {
     const target = document.getElementById(hash);
     if (!target) return;
 
-    const frame = window.requestAnimationFrame(() => {
+    let cancelled = false;
+    let secondFrame: number | undefined;
+    const scrollToTarget = () => {
+      if (cancelled) return;
       target.scrollIntoView({ block: 'start' });
-    });
+    };
 
-    return () => window.cancelAnimationFrame(frame);
+    const firstFrame = window.requestAnimationFrame(() => {
+      secondFrame = window.requestAnimationFrame(scrollToTarget);
+    });
+    const layoutCheck = window.setTimeout(scrollToTarget, 450);
+
+    void document.fonts?.ready.then(scrollToTarget);
+    window.addEventListener('load', scrollToTarget, { once: true });
+
+    return () => {
+      cancelled = true;
+      window.cancelAnimationFrame(firstFrame);
+      if (secondFrame !== undefined) window.cancelAnimationFrame(secondFrame);
+      window.clearTimeout(layoutCheck);
+      window.removeEventListener('load', scrollToTarget);
+    };
   }, []);
 
   useEffect(() => {
